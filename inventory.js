@@ -387,6 +387,16 @@ function setupEventListeners() {
             renderInventory({ stockStatus: e.target.value });
         });
     }
+
+    // Delete modal outside click
+    const deleteModal = document.getElementById('deleteConfirmModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                hideDeleteModal();
+            }
+        });
+    }
 }
 
 // Render inventory items
@@ -485,12 +495,60 @@ function editItem(sku) {
 }
 
 function deleteItem(sku) {
-    if (confirm('Are you sure you want to delete this item?')) {
-        inventoryData = inventoryData.filter(item => item.sku !== sku);
-        renderInventory();
-        updateDashboardStats();
-        showNotification('Item deleted successfully!', 'success');
+    const item = inventoryData.find(item => item.sku === sku);
+    if (item) {
+        showDeleteModal(item);
     }
+}
+
+// Add these new functions
+function showDeleteModal(item) {
+    const modal = document.getElementById('deleteConfirmModal');
+    const itemNameElement = modal.querySelector('.item-name');
+    const itemSkuElement = modal.querySelector('.item-sku');
+    
+    // Set item details
+    itemNameElement.textContent = item.name;
+    itemSkuElement.textContent = `SKU: ${item.sku}`;
+    
+    // Store the SKU for the confirm button
+    const confirmButton = modal.querySelector('.confirm-delete');
+    confirmButton.setAttribute('data-sku', item.sku);
+    
+    // Add click event handler for delete confirmation
+    confirmButton.onclick = () => {
+        const skuToDelete = confirmButton.getAttribute('data-sku');
+        confirmDelete(skuToDelete);
+    };
+    
+    // Show modal with animation
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+    });
+}
+
+function hideDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    modal.classList.add('closing');
+    
+    setTimeout(() => {
+        modal.classList.remove('active', 'closing');
+    }, 300);
+}
+
+function confirmDelete(sku) {
+    // Remove item from inventory
+    inventoryData = inventoryData.filter(item => item.sku !== sku);
+    
+    // Update UI
+    renderInventory();
+    updateDashboardStats();
+    
+    // Show success notification
+    showNotification('Item deleted successfully!', 'success');
+    
+    // Hide the modal
+    hideDeleteModal();
 }
 
 // Update the populateInventoryTable function
