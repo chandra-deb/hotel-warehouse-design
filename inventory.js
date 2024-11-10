@@ -258,8 +258,16 @@ function showAddItemModal() {
 // Function to hide the add item modal
 function hideAddItemModal() {
     const modal = document.getElementById('addItemModal');
+    const form = document.getElementById('addItemForm');
+    
     modal.classList.remove('active');
-    document.getElementById('addItemForm').reset();
+    form.reset();
+    form.removeAttribute('data-editing-sku');
+    
+    const submitBtn = form.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.textContent = 'Add Item';
+    }
 }
 
 // Function to generate SKU
@@ -315,8 +323,14 @@ function showNotification(message, type = 'success') {
 
 // Initialize the inventory page
 document.addEventListener('DOMContentLoaded', () => {
-    populateInventoryTable();
-    updateStats();
+    // Load stored data if available
+    const storedData = localStorage.getItem('inventoryData');
+    if (storedData) {
+        inventoryData = JSON.parse(storedData);
+    }
+    
+    renderInventory();
+    updateDashboardStats();
     setupEventListeners();
 });
 
@@ -446,14 +460,24 @@ function updateStats() {
 function editItem(sku) {
     const item = inventoryData.find(item => item.sku === sku);
     if (item) {
-        // Populate the form with item data
         const form = document.getElementById('addItemForm');
+        
+        // Store the SKU of the item being edited
+        form.setAttribute('data-editing-sku', sku);
+        
+        // Populate the form with item data
         form.querySelector('[name="name"]').value = item.name;
         form.querySelector('[name="department"]').value = item.department;
         form.querySelector('[name="location"]').value = item.location;
         form.querySelector('[name="quantity"]').value = item.quantity;
         form.querySelector('[name="reorderPoint"]').value = item.reorderPoint;
         form.querySelector('[name="unitPrice"]').value = item.unitPrice;
+        
+        // Change submit button text
+        const submitBtn = form.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.textContent = 'Update Item';
+        }
         
         // Show the modal
         showAddItemModal();
@@ -464,7 +488,7 @@ function deleteItem(sku) {
     if (confirm('Are you sure you want to delete this item?')) {
         inventoryData = inventoryData.filter(item => item.sku !== sku);
         renderInventory();
-        updateStats();
+        updateDashboardStats();
         showNotification('Item deleted successfully!', 'success');
     }
 }
@@ -477,31 +501,98 @@ function populateInventoryTable() {
     inventoryGrid.innerHTML = inventoryData.map(item => createInventoryItemElement(item)).join('');
 }
 
-// Add this function to handle form submission
+// Update the handleAddItem function
 function handleAddItem(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const editingSku = e.target.getAttribute('data-editing-sku');
     
-    const newItem = {
+    const itemData = {
         name: formData.get('name'),
         department: formData.get('department'),
         location: formData.get('location'),
         quantity: parseInt(formData.get('quantity')),
         reorderPoint: parseInt(formData.get('reorderPoint')),
-        unitPrice: parseFloat(formData.get('unitPrice')),
-        sku: generateSKU(formData.get('department'))
+        unitPrice: parseFloat(formData.get('unitPrice'))
     };
 
-    // Add to inventory data
-    inventoryData.push(newItem);
-    
-    // Update inventory display
+    if (editingSku) {
+        // Update existing item
+        const index = inventoryData.findIndex(item => item.sku === editingSku);
+        if (index !== -1) {
+            // Keep the original SKU when updating
+            itemData.sku = editingSku;
+            inventoryData[index] = itemData;
+            showNotification('Item updated successfully!', 'success');
+        }
+    } else {
+        // Add new item
+        itemData.sku = generateSKU(itemData.department);
+        inventoryData.push(itemData);
+        showNotification('Item added successfully!', 'success');
+    }
+
+    // Update both inventory grid and dashboard stats
     renderInventory();
+    updateDashboardStats();
     
-    // Show success message
-    showNotification('Item added successfully!', 'success');
-    
-    // Close modal and reset form
+    // Reset form and close modal
     hideAddItemModal();
+    e.target.removeAttribute('data-editing-sku');
+    const submitBtn = e.target.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.textContent = 'Add Item';
+    }
     e.target.reset();
+}
+
+// Add function to update dashboard statistics
+function updateDashboardStats() {
+    const stats = {
+        totalItems: inventoryData.reduce((acc, item) => acc + item.quantity, 0),
+        totalDepartments: new Set(inventoryData.map(item => item.department)).size,
+        lowStockItems: inventoryData.filter(item => item.quantity <= item.reorderPoint).length,
+        totalValue: inventoryData.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0)
+    };
+
+    // Update dashboard cards if they exist
+    const dashboardCards = document.querySelectorAll('.stat-card');
+    if (dashboardCards.length > 0) {
+        dashboardCards.forEach(card => {
+            const type = card.getAttribute('data-stat-type');
+            const valueElement = card.querySelector('.stat-value');
+            if (valueElement && stats[type] !== undefined) {
+                if (type === 'totalValue') {
+                    valueElement.textContent = `$${stats[type].toFixed(2)}`;
+                } else {
+                    valueElement.textContent = stats[type];
+                }
+            }
+        });
+    }
+
+    // Also update any stats in the inventory page
+    const totalItemsElement = document.querySelector('.total-items');
+    if (totalItemsElement) {
+        totalItemsElement.textContent = stats.totalItems;
+    }
+
+    const totalDepartmentsElement = document.querySelector('.total-departments');
+    if (totalDepartmentsElement) {
+        totalDepartmentsElement.textContent = stats.totalDepartments;
+    }
+
+    const lowStockElement = document.querySelector('.low-stock-items');
+    if (lowStockElement) {
+        lowStockElement.textContent = stats.lowStockItems;
+    }
+
+    const totalValueElement = document.querySelector('.total-value');
+    if (totalValueElement) {
+        totalValueElement.textContent = `$${stats.totalValue.toFixed(2)}`;
+    }
+
+    // Store updated stats in localStorage for persistence
+    localStorage.setItem('inventoryStats', JSON.stringify(stats));
+    localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
 }
