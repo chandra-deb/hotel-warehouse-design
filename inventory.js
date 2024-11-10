@@ -42,6 +42,7 @@ function createInventoryItemElement(item) {
 
 // Sample data for the hotel inventory list
 let inventoryData = [
+    // Housekeeping Items
     {
         name: 'Bath Towels',
         sku: 'HSK-2233667',
@@ -52,6 +53,15 @@ let inventoryData = [
         unitPrice: 12.99
     },
     {
+        name: 'Hand Towels',
+        sku: 'HSK-2233668',
+        quantity: 200,
+        location: 'A-13',
+        department: 'Housekeeping',
+        reorderPoint: 150,
+        unitPrice: 8.99
+    },
+    {
         name: 'Queen Bed Sheets',
         sku: 'HSK-2233645',
         quantity: 85,
@@ -60,7 +70,183 @@ let inventoryData = [
         reorderPoint: 90,
         unitPrice: 28.50
     },
-    // Add more sample items...
+    {
+        name: 'King Bed Sheets',
+        sku: 'HSK-2233646',
+        quantity: 65,
+        location: 'B-04',
+        department: 'Housekeeping',
+        reorderPoint: 70,
+        unitPrice: 32.50
+    },
+    {
+        name: 'Pillowcases',
+        sku: 'HSK-2233647',
+        quantity: 300,
+        location: 'B-05',
+        department: 'Housekeeping',
+        reorderPoint: 200,
+        unitPrice: 6.99
+    },
+    {
+        name: 'Cleaning Supplies',
+        sku: 'HSK-2233456',
+        quantity: 65,
+        location: 'D-04',
+        department: 'Housekeeping',
+        reorderPoint: 70,
+        unitPrice: 15.99
+    },
+    {
+        name: 'Vacuum Cleaner Bags',
+        sku: 'HSK-2233457',
+        quantity: 45,
+        location: 'D-05',
+        department: 'Housekeeping',
+        reorderPoint: 50,
+        unitPrice: 12.99
+    },
+
+    // Amenities Items
+    {
+        name: 'Shampoo Bottles',
+        sku: 'AMN-2233890',
+        quantity: 45,
+        location: 'A-14',
+        department: 'Amenities',
+        reorderPoint: 50,
+        unitPrice: 3.99
+    },
+    {
+        name: 'Conditioner Bottles',
+        sku: 'AMN-2233891',
+        quantity: 48,
+        location: 'A-15',
+        department: 'Amenities',
+        reorderPoint: 50,
+        unitPrice: 3.99
+    },
+    {
+        name: 'Body Lotion',
+        sku: 'AMN-2233892',
+        quantity: 55,
+        location: 'A-16',
+        department: 'Amenities',
+        reorderPoint: 50,
+        unitPrice: 3.50
+    },
+    {
+        name: 'Shower Caps',
+        sku: 'AMN-2233893',
+        quantity: 150,
+        location: 'A-17',
+        department: 'Amenities',
+        reorderPoint: 100,
+        unitPrice: 0.50
+    },
+    {
+        name: 'Dental Kits',
+        sku: 'AMN-2233894',
+        quantity: 180,
+        location: 'A-18',
+        department: 'Amenities',
+        reorderPoint: 150,
+        unitPrice: 1.99
+    },
+
+    // F&B Items
+    {
+        name: 'Coffee Pods',
+        sku: 'FNB-2233123',
+        quantity: 30,
+        location: 'C-01',
+        department: 'F&B',
+        reorderPoint: 40,
+        unitPrice: 0.75
+    },
+    {
+        name: 'Tea Bags',
+        sku: 'FNB-2233124',
+        quantity: 250,
+        location: 'C-02',
+        department: 'F&B',
+        reorderPoint: 200,
+        unitPrice: 0.25
+    },
+    {
+        name: 'Sugar Packets',
+        sku: 'FNB-2233125',
+        quantity: 500,
+        location: 'C-03',
+        department: 'F&B',
+        reorderPoint: 400,
+        unitPrice: 0.10
+    },
+    {
+        name: 'Creamer Packets',
+        sku: 'FNB-2233126',
+        quantity: 450,
+        location: 'C-04',
+        department: 'F&B',
+        reorderPoint: 400,
+        unitPrice: 0.15
+    },
+    {
+        name: 'Bottled Water',
+        sku: 'FNB-2233127',
+        quantity: 280,
+        location: 'C-05',
+        department: 'F&B',
+        reorderPoint: 300,
+        unitPrice: 0.99
+    },
+    {
+        name: 'Snack Bars',
+        sku: 'FNB-2233128',
+        quantity: 150,
+        location: 'C-06',
+        department: 'F&B',
+        reorderPoint: 120,
+        unitPrice: 1.50
+    },
+    {
+        name: 'Mini Bar Chocolates',
+        sku: 'FNB-2233129',
+        quantity: 95,
+        location: 'C-07',
+        department: 'F&B',
+        reorderPoint: 100,
+        unitPrice: 2.50
+    },
+
+    // Additional Housekeeping Items
+    {
+        name: 'Toilet Paper Rolls',
+        sku: 'HSK-2233648',
+        quantity: 400,
+        location: 'D-06',
+        department: 'Housekeeping',
+        reorderPoint: 350,
+        unitPrice: 1.99
+    },
+    {
+        name: 'Facial Tissues',
+        sku: 'HSK-2233649',
+        quantity: 250,
+        location: 'D-07',
+        department: 'Housekeeping',
+        reorderPoint: 200,
+        unitPrice: 2.99
+    },
+    {
+        name: 'Laundry Bags',
+        sku: 'HSK-2233650',
+        quantity: 180,
+        location: 'D-08',
+        department: 'Housekeeping',
+        reorderPoint: 150,
+        unitPrice: 0.75
+    }
 ];
 
 // Function to show the add item modal
