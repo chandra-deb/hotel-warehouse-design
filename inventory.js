@@ -252,22 +252,26 @@ let inventoryData = [
 // Function to show the add item modal
 function showAddItemModal() {
     const modal = document.getElementById('addItemModal');
-    modal.classList.add('active');
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+    });
 }
 
 // Function to hide the add item modal
 function hideAddItemModal() {
     const modal = document.getElementById('addItemModal');
-    const form = document.getElementById('addItemForm');
+    modal.classList.add('closing');
     
-    modal.classList.remove('active');
-    form.reset();
-    form.removeAttribute('data-editing-sku');
-    
-    const submitBtn = form.querySelector('.submit-btn');
-    if (submitBtn) {
-        submitBtn.textContent = 'Add Item';
-    }
+    setTimeout(() => {
+        modal.classList.remove('active', 'closing');
+        const form = document.getElementById('addItemForm');
+        form.reset();
+        form.removeAttribute('data-editing-sku');
+        const submitBtn = form.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.textContent = 'Add Item';
+        }
+    }, 300);
 }
 
 // Function to generate SKU
@@ -507,21 +511,16 @@ function showDeleteModal(item) {
     const itemNameElement = modal.querySelector('.item-name');
     const itemSkuElement = modal.querySelector('.item-sku');
     
-    // Set item details
     itemNameElement.textContent = item.name;
     itemSkuElement.textContent = `SKU: ${item.sku}`;
     
-    // Store the SKU for the confirm button
     const confirmButton = modal.querySelector('.confirm-delete');
     confirmButton.setAttribute('data-sku', item.sku);
-    
-    // Add click event handler for delete confirmation
     confirmButton.onclick = () => {
         const skuToDelete = confirmButton.getAttribute('data-sku');
         confirmDelete(skuToDelete);
     };
     
-    // Show modal with animation
     requestAnimationFrame(() => {
         modal.classList.add('active');
     });

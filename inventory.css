@@ -208,10 +208,7 @@
     transform: scale(0.8);
     opacity: 0;
     background: white;
-    padding: 30px;
     border-radius: 12px;
-    width: 100%;
-    max-width: 500px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -461,4 +458,11 @@
         transform: scale(0.8);
         opacity: 0;
     }
+} 
+
+/* Add specific styles for add item form */
+#addItemModal .modal-content {
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
 } 
