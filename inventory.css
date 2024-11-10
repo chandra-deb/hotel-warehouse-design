@@ -267,10 +267,7 @@
     box-shadow: 0 0 0 2px rgba(56, 57, 126, 0.1);
 }
 
-.form-group input:invalid,
-.form-group select:invalid {
-    border-color: #f44336;
-}
+
 
 .form-group input:invalid:focus,
 .form-group select:invalid:focus {
