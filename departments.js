@@ -1,39 +1,70 @@
 // Departments Data Model
-let departmentsData = [
-    {
-        id: 1,
-        name: 'Housekeeping',
-        head: 'Maria Rodriguez',
-        description: 'Responsible for room cleaning, maintenance, and guest comfort',
-        items: [
-            { name: 'Bath Towels', quantity: 120 },
-            { name: 'Cleaning Supplies', quantity: 65 }
-        ]
-    },
-    {
-        id: 2,
-        name: 'Food & Beverage',
-        head: 'John Smith',
-        description: 'Manages restaurant, room service, and mini-bar operations',
-        items: [
-            { name: 'Coffee Pods', quantity: 30 },
-            { name: 'Tea Bags', quantity: 250 }
-        ]
-    },
-    {
-        id: 3,
-        name: 'Amenities',
-        head: 'Sarah Lee',
-        description: 'Manages guest amenities and welcome packages',
-        items: [
-            { name: 'Shampoo Bottles', quantity: 45 },
-            { name: 'Dental Kits', quantity: 180 }
-        ]
-    }
-];
-
+let departmentsData = [];
 let transferRequests = [];
-let selectedDepartmentId = null;
+
+// Function to save departments to local storage
+function saveDepartmentsToLocalStorage() {
+    localStorage.setItem('departmentsData', JSON.stringify(departmentsData));
+}
+
+// Function to save transfer requests to local storage
+function saveTransferRequestsToLocalStorage() {
+    localStorage.setItem('transferRequests', JSON.stringify(transferRequests));
+}
+
+// Function to load departments from local storage
+function loadDepartmentsFromLocalStorage() {
+    const storedDepartments = localStorage.getItem('departmentsData');
+    if (storedDepartments) {
+        departmentsData = JSON.parse(storedDepartments);
+    } else {
+        // Initial default departments if no data exists
+        departmentsData = [
+            {
+                id: 1,
+                name: 'Housekeeping',
+                head: 'Maria Rodriguez',
+                description: 'Responsible for room cleaning and maintenance',
+                items: [
+                    { name: 'Bath Towels', quantity: 120 },
+                    { name: 'Cleaning Supplies', quantity: 65 }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Food & Beverage',
+                head: 'John Smith',
+                description: 'Manages dining and catering services',
+                items: [
+                    { name: 'Coffee Pods', quantity: 30 },
+                    { name: 'Tea Bags', quantity: 250 }
+                ]
+            },
+            {
+                id: 3,
+                name: 'Amenities',
+                head: 'Sarah Johnson',
+                description: 'Handles guest amenities and welcome packages',
+                items: [
+                    { name: 'Shampoo Bottles', quantity: 45 },
+                    { name: 'Dental Kits', quantity: 180 }
+                ]
+            }
+        ];
+        saveDepartmentsToLocalStorage();
+    }
+}
+
+// Function to load transfer requests from local storage
+function loadTransferRequestsFromLocalStorage() {
+    const storedTransferRequests = localStorage.getItem('transferRequests');
+    if (storedTransferRequests) {
+        transferRequests = JSON.parse(storedTransferRequests);
+    } else {
+        transferRequests = [];
+        saveTransferRequestsToLocalStorage();
+    }
+}
 
 // Function to delete a department
 function deleteDepartment(id) {
@@ -42,6 +73,7 @@ function deleteDepartment(id) {
     if (department) {
         showDeleteModal(department);
     }
+    saveDepartmentsToLocalStorage();
 }
 
 function showDeleteModal(department) {
@@ -68,6 +100,7 @@ function hideDeleteModal() {
 function confirmDeleteDepartment() {
     if (selectedDepartmentId !== null) {
         departmentsData = departmentsData.filter(d => d.id !== selectedDepartmentId);
+        saveDepartmentsToLocalStorage();
         renderDepartments();
         hideDeleteModal();
         showNotification('Department deleted successfully', 'warning');
@@ -84,27 +117,40 @@ function renderDepartments(filteredDepartments = null) {
     dataToRender.forEach(department => {
         const departmentCard = document.createElement('div');
         departmentCard.className = 'department-card';
+        
+        // Conditionally render items section only if there are items
+        const itemsSection = department.items && department.items.length > 0 
+            ? `
+                <div class="department-items">
+                    <strong>Department Items:</strong>
+                    <ul>
+                        ${department.items.map(item => `
+                            <li>
+                                <span>${item.name}</span>
+                                <span>${item.quantity}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            ` 
+            : ''; // Empty string if no items
+
         departmentCard.innerHTML = `
             <div class="department-card-header">
                 <h3>${department.name}</h3>
                 <div class="department-actions">
-                    <button class="department-edit-btn" onclick="editDepartment(${department.id})">
+                    <button class="department-edit-btn" onclick="editDepartment(${department.id})" title="Edit Department">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="department-delete-btn" onclick="deleteDepartment(${department.id})">
+                    <button class="department-delete-btn" onclick="deleteDepartment(${department.id})" title="Delete Department">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
             <div class="department-card-details">
-                <p><strong>Head:</strong> ${department.head}</p>
+                <p><strong>Department Head:</strong> ${department.head}</p>
                 <p>${department.description}</p>
-                <div class="department-items">
-                    <strong>Key Items:</strong>
-                    <ul>
-                        ${department.items.map(item => `<li>${item.name}: ${item.quantity}</li>`).join('')}
-                    </ul>
-                </div>
+                ${itemsSection}
             </div>
         `;
         departmentsGrid.appendChild(departmentCard);
@@ -270,6 +316,7 @@ function requestItemTransfer(e) {
 
     // Add transfer request
     transferRequests.push(transferRequest);
+    saveTransferRequestsToLocalStorage();
     
     // Update source department item quantity
     sourceItem.quantity -= quantity;
@@ -287,6 +334,9 @@ function requestItemTransfer(e) {
             });
         }
     }
+    
+    // Save changes to local storage
+    saveDepartmentsToLocalStorage();
     
     // Render transfer requests and departments
     renderTransferRequests();
@@ -350,6 +400,8 @@ function approveTransfer(requestId) {
 
         // Update request status
         request.status = 'Approved';
+        saveTransferRequestsToLocalStorage();
+        saveDepartmentsToLocalStorage();
         renderTransferRequests();
         renderDepartments();
         showNotification('Transfer request approved!');
@@ -363,6 +415,7 @@ function rejectTransfer(requestId) {
     const requestIndex = transferRequests.findIndex(r => r.id === requestId);
     if (requestIndex !== -1) {
         transferRequests[requestIndex].status = 'Rejected';
+        saveTransferRequestsToLocalStorage();
         renderTransferRequests();
         showNotification('Transfer request rejected.');
     }
@@ -419,8 +472,76 @@ function getDepartmentName(id) {
     return department ? department.name : 'Unknown';
 }
 
+// Function to add a new department
+function addDepartment(e) {
+    e.preventDefault();
+
+    // Get form elements
+    const departmentName = document.getElementById('departmentName');
+    const departmentHead = document.getElementById('departmentHead');
+    const departmentDescription = document.getElementById('departmentDescription');
+
+    // Debug logging
+    console.log('Add Department Form Elements:', {
+        departmentName,
+        departmentHead,
+        departmentDescription
+    });
+
+    // Validate form elements exist
+    if (!departmentName || !departmentHead || !departmentDescription) {
+        showNotification('Form elements not found. Please check the form setup.', 'error');
+        return;
+    }
+
+    // Validate inputs
+    if (!departmentName.value.trim()) {
+        showNotification('Department name is required', 'error');
+        return;
+    }
+
+    // Check if department name already exists
+    if (departmentsData.some(d => d.name.toLowerCase() === departmentName.value.trim().toLowerCase())) {
+        showNotification('A department with this name already exists', 'error');
+        return;
+    }
+
+    // Create new department object
+    const newDepartment = {
+        id: departmentsData.length > 0 
+            ? Math.max(...departmentsData.map(d => d.id)) + 1 
+            : 1,
+        name: departmentName.value.trim(),
+        head: departmentHead.value.trim() || 'Unassigned',
+        description: departmentDescription.value.trim() || 'No description provided',
+        items: [] // Start with no items
+    };
+
+    // Add department to data
+    departmentsData.push(newDepartment);
+
+    // Save to local storage
+    saveDepartmentsToLocalStorage();
+
+    // Render updated departments
+    renderDepartments();
+
+    // Reset form and hide modal
+    departmentName.value = '';
+    departmentHead.value = '';
+    departmentDescription.value = '';
+    hideAddDepartmentModal();
+
+    // Show success notification
+    showNotification('Department added successfully!');
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Load data from local storage
+    loadDepartmentsFromLocalStorage();
+    loadTransferRequestsFromLocalStorage();
+
     // Initial render
     renderDepartments();
     renderTransferRequests();
@@ -432,6 +553,19 @@ document.addEventListener('DOMContentLoaded', () => {
         itemTransferForm.addEventListener('submit', function(e) {
             requestItemTransfer(e);
         });
+    }
+
+    // Setup add department form submission
+    const addDepartmentForm = document.getElementById('addDepartmentForm');
+    console.log('Add Department Form:', addDepartmentForm); // Debug logging
+
+    if (addDepartmentForm) {
+        addDepartmentForm.addEventListener('submit', function(e) {
+            console.log('Add Department Form Submitted'); // Debug logging
+            addDepartment(e);
+        });
+    } else {
+        console.error('Add Department Form not found. Check your HTML form ID.');
     }
 
     // Setup modal close buttons

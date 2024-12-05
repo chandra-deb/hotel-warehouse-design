@@ -78,60 +78,18 @@
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s ease;
-}
-
-.department-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.department-card-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.department-card-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: var(--text-color);
-}
-
-.department-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.department-edit-btn,
-.department-delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-}
-
-.department-edit-btn {
-    color: var(--primary-color);
-}
-
-.department-delete-btn {
-    color: #f44336;
-}
-
-.department-edit-btn:hover {
-    background-color: rgba(56, 57, 126, 0.1);
-}
-
-.department-delete-btn:hover {
-    background-color: rgba(244, 67, 54, 0.1);
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 60px;
 }
 
 .department-card-details {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    margin-bottom: 16px;
 }
 
 .department-card-details p {
@@ -154,6 +112,50 @@
 
 .department-items li:last-child {
     border-bottom: none;
+}
+
+.department-actions {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.department-card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-color);
+}
+
+.department-edit-btn,
+.department-delete-btn {
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.department-edit-btn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.department-delete-btn {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.department-edit-btn:hover {
+    background-color: rgba(56, 57, 126, 0.1);
+}
+
+.department-delete-btn:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.department-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .transfer-requests-section {
