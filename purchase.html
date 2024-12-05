@@ -11,29 +11,18 @@
 <body>
     <div class="container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="assets/logo.png" alt="Hotel Warehouse Logo">
+        <nav class="sidebar">
+            <div class="logo-container">
+                <img src="logo.png" alt="Hotel Warehouse Logo" class="logo">
             </div>
-            <nav class="sidebar-nav">
-                <a href="index.html">
-                    <i class="fas fa-home"></i>
-                    Dashboard
-                </a>
-                <a href="inventory.html">
-                    <i class="fas fa-boxes"></i>
-                    Inventory
-                </a>
-                <a href="vendor.html">
-                    <i class="fas fa-truck"></i>
-                    Vendors
-                </a>
-                <a href="purchase.html" class="active">
-                    <i class="fas fa-shopping-cart"></i>
-                    Purchases
-                </a>
-            </nav>
-        </aside>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="inventory.html"><i class="fas fa-box-open"></i> Inventory</a></li>
+                <li class="active"><a href="purchase.html"><i class="fas fa-shopping-cart"></i> Purchases</a></li>
+                <li><a href="vendor.html"><i class="fas fa-truck"></i> Vendors</a></li>
+                <li><a href="departments.html"><i class="fas fa-building"></i> Departments</a></li>
+            </ul>
+        </nav>
 
         <main class="main-content">
             <!-- Header -->

@@ -265,6 +265,38 @@ let vendors = [
 
 ];
 
+// Function to filter vendors
+function filterVendors() {
+    const searchInput = document.getElementById('vendorSearch').value.toLowerCase();
+    const performanceFilter = document.getElementById('performanceFilter').value;
+    
+    const filteredVendors = vendors.filter(vendor => {
+        const matchesSearch = 
+            vendor.name.toLowerCase().includes(searchInput) ||
+            vendor.contactPerson.toLowerCase().includes(searchInput) ||
+            vendor.email.toLowerCase().includes(searchInput) ||
+            vendor.phone.toLowerCase().includes(searchInput) ||
+            vendor.address.toLowerCase().includes(searchInput);
+        
+        const matchesPerformance = 
+            performanceFilter === 'all' || 
+            vendor.performance === performanceFilter;
+        
+        return matchesSearch && matchesPerformance;
+    });
+    
+    renderVendors(filteredVendors);
+}
+
+// Add event listeners for filtering
+function setupFilterListeners() {
+    const searchInput = document.getElementById('vendorSearch');
+    const performanceFilter = document.getElementById('performanceFilter');
+    
+    searchInput.addEventListener('input', filterVendors);
+    performanceFilter.addEventListener('change', filterVendors);
+}
+
 // Initialize the vendor page
 document.addEventListener('DOMContentLoaded', () => {
     // Load stored data if available
@@ -277,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Setup event listeners
     setupEventListeners();
+    setupFilterListeners();
 
     // Initial render
     renderVendors(vendors);
@@ -306,17 +339,6 @@ function setupEventListeners() {
         }
     });
 
-    // Search functionality
-    const searchInput = document.querySelector('.search-bar input');
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredVendors = vendors.filter(vendor => 
-            vendor.name.toLowerCase().includes(searchTerm) ||
-            vendor.contactPerson.toLowerCase().includes(searchTerm) ||
-            vendor.email.toLowerCase().includes(searchTerm)
-        );
-        renderVendors(filteredVendors);
-    });
 
     // Vendor form submission
     const vendorForm = document.getElementById('vendorForm');
