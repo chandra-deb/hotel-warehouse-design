@@ -58,6 +58,20 @@
             <div class="inventory-grid" id="departmentsGrid">
                 <!-- Departments will be dynamically populated here -->
             </div>
+            <!-- Delete Confirmation Modal -->
+            <div id="deleteConfirmModal" class="modal">
+                <div class="modal-content delete-confirm">
+                    <div class="delete-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h3>Delete Department</h3>
+                    <p></p>
+                    <div class="modal-actions">
+                        <button class="btn-danger" onclick="confirmDeleteDepartment()">Delete</button>
+                        <button class="btn-secondary" onclick="hideDeleteModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Transfer Requests Section -->
             <div class="transfer-requests-section">
@@ -121,15 +135,27 @@
             <form id="itemTransferForm">
                 <div class="form-group">
                     <label for="sourceDepartment">Source Department</label>
-                    <select id="sourceDepartment" name="sourceDepartment" required></select>
+                    <select id="sourceDepartment" name="sourceDepartment" required onchange="updateSourceItems()">
+                        <option value="">Select Source Department</option>
+                        <option value="1">Housekeeping</option>
+                        <option value="2">Food & Beverage</option>
+                        <option value="3">Amenities</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="targetDepartment">Target Department</label>
-                    <select id="targetDepartment" name="targetDepartment" required></select>
+                    <select id="targetDepartment" name="targetDepartment" required>
+                        <option value="">Select Target Department</option>
+                        <option value="1">Housekeeping</option>
+                        <option value="2">Food & Beverage</option>
+                        <option value="3">Amenities</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="transferItem">Item</label>
-                    <select id="transferItem" name="transferItem" required></select>
+                    <label for="transferItem">Item to Transfer</label>
+                    <select id="transferItem" name="transferItem" required>
+                        <option value="">Select Item</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="transferQuantity">Quantity</label>

@@ -33,6 +33,46 @@ let departmentsData = [
 ];
 
 let transferRequests = [];
+let selectedDepartmentId = null;
+
+// Function to delete a department
+function deleteDepartment(id) {
+    selectedDepartmentId = id;
+    const department = departmentsData.find(d => d.id === id);
+    if (department) {
+        showDeleteModal(department);
+    }
+}
+
+function showDeleteModal(department) {
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    const message = document.querySelector('#deleteConfirmModal p');
+    message.textContent = `Are you sure you want to delete department "${department.name}"? This action cannot be undone.`;
+    deleteConfirmModal.style.display = 'flex';
+    requestAnimationFrame(() => {
+        deleteConfirmModal.classList.add('active');
+    });
+}
+
+function hideDeleteModal() {
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    deleteConfirmModal.classList.add('closing');
+    
+    setTimeout(() => {
+        deleteConfirmModal.classList.remove('active', 'closing');
+        deleteConfirmModal.style.display = 'none';
+        selectedDepartmentId = null;
+    }, 300);
+}
+
+function confirmDeleteDepartment() {
+    if (selectedDepartmentId !== null) {
+        departmentsData = departmentsData.filter(d => d.id !== selectedDepartmentId);
+        renderDepartments();
+        hideDeleteModal();
+        showNotification('Department deleted successfully', 'warning');
+    }
+}
 
 // Function to render departments
 function renderDepartments(filteredDepartments = null) {
@@ -101,29 +141,18 @@ function renderTransferRequests() {
 // Function to show add department modal
 function showAddDepartmentModal() {
     const modal = document.getElementById('addDepartmentModal');
-    
-    // Reset form and remove any previous editing state
-    const form = document.getElementById('addDepartmentForm');
-    form.reset();
-    delete form.dataset.editingId;
-    
-    // Reset modal header and submit button
-    modal.querySelector('.modal-header h2').textContent = 'Add New Department';
-    form.querySelector('.submit-btn').textContent = 'Add Department';
-    
-    // Show modal
     modal.style.display = 'flex';
     requestAnimationFrame(() => {
         modal.classList.add('active');
     });
 }
 
-// Function to hide add department modal
 function hideAddDepartmentModal() {
     const modal = document.getElementById('addDepartmentModal');
-    modal.classList.remove('active');
+    modal.classList.add('closing');
     
     setTimeout(() => {
+        modal.classList.remove('active', 'closing');
         modal.style.display = 'none';
     }, 300);
 }
@@ -150,60 +179,26 @@ function editDepartment(id) {
     showAddDepartmentModal();
 }
 
-// Function to delete a department
-function deleteDepartment(id) {
-    departmentsData = departmentsData.filter(d => d.id !== id);
-    renderDepartments();
-    showNotification('Department deleted successfully!');
-}
-
 // Function to show item transfer modal
 function showItemTransferModal() {
     const modal = document.getElementById('itemTransferModal');
-    const sourceDepartmentSelect = modal.querySelector('#sourceDepartment');
-    const targetDepartmentSelect = modal.querySelector('#targetDepartment');
-    const itemSelect = modal.querySelector('#transferItem');
-
-    // Reset form
-    document.getElementById('itemTransferForm').reset();
-
-    // Populate department selects
-    sourceDepartmentSelect.innerHTML = departmentsData.map(dept => 
-        `<option value="${dept.id}">${dept.name}</option>`
-    ).join('');
-
-    targetDepartmentSelect.innerHTML = departmentsData.map(dept => 
-        `<option value="${dept.id}">${dept.name}</option>`
-    ).join('');
-
-    // Populate items select (from source department)
-    sourceDepartmentSelect.addEventListener('change', (e) => {
-        const sourceDept = departmentsData.find(d => d.id === parseInt(e.target.value));
-        itemSelect.innerHTML = sourceDept.items.map(item => 
-            `<option value="${item.name}">${item.name} (${item.quantity})</option>`
-        ).join('');
-    });
-
-    // Trigger initial items population
-    if (departmentsData.length > 0) {
-        const firstDept = departmentsData[0];
-        itemSelect.innerHTML = firstDept.items.map(item => 
-            `<option value="${item.name}">${item.name} (${item.quantity})</option>`
-        ).join('');
+    if (!modal) return;
+    
+    // Reset form if it exists
+    const form = document.getElementById('itemTransferForm');
+    if (form) {
+        form.reset();
     }
-
-    // Show modal
+    
     modal.style.display = 'flex';
-    requestAnimationFrame(() => {
-        modal.classList.add('active');
-    });
+    modal.classList.add('active');
 }
 
-// Function to hide item transfer modal
 function hideItemTransferModal() {
     const modal = document.getElementById('itemTransferModal');
-    modal.classList.remove('active');
+    if (!modal) return;
     
+    modal.classList.remove('active');
     setTimeout(() => {
         modal.style.display = 'none';
     }, 300);
@@ -212,28 +207,118 @@ function hideItemTransferModal() {
 // Function to request item transfer
 function requestItemTransfer(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
     
+    // Get form elements directly
+    const sourceDepartment = document.getElementById('sourceDepartment');
+    const targetDepartment = document.getElementById('targetDepartment');
+    const transferItem = document.getElementById('transferItem');
+    const transferQuantity = document.getElementById('transferQuantity');
+    const transferReason = document.getElementById('transferReason');
+
+    // Validate inputs
+    if (!sourceDepartment.value || !targetDepartment.value) {
+        showNotification('Please select source and target departments', 'error');
+        return;
+    }
+
+    if (sourceDepartment.value === targetDepartment.value) {
+        showNotification('Source and target departments cannot be the same', 'error');
+        return;
+    }
+
+    if (!transferItem.value || transferItem.value.trim() === '') {
+        showNotification('Please enter an item to transfer', 'error');
+        return;
+    }
+
+    const quantity = parseInt(transferQuantity.value);
+    if (isNaN(quantity) || quantity <= 0) {
+        showNotification('Please enter a valid quantity', 'error');
+        return;
+    }
+
+    // Find source department and check item availability
+    const sourceDept = departmentsData.find(d => d.id === parseInt(sourceDepartment.value));
+
+    if (!sourceDept) {
+        showNotification('Invalid source department', 'error');
+        return;
+    }
+
+    const sourceItem = sourceDept.items.find(item => item.name.toLowerCase() === transferItem.value.toLowerCase());
+
+    if (!sourceItem) {
+        showNotification(`Item "${transferItem.value}" not found in source department`, 'error');
+        return;
+    }
+
+    if (sourceItem.quantity < quantity) {
+        showNotification(`Insufficient ${transferItem.value} in source department. Available: ${sourceItem.quantity}`, 'error');
+        return;
+    }
+
+    // Create transfer request
     const transferRequest = {
         id: transferRequests.length + 1,
-        sourceDepartment: formData.get('sourceDepartment'),
-        targetDepartment: formData.get('targetDepartment'),
-        item: formData.get('transferItem'),
-        quantity: parseInt(formData.get('transferQuantity')),
-        reason: formData.get('transferReason'),
+        sourceDepartment: sourceDepartment.value,
+        targetDepartment: targetDepartment.value,
+        item: transferItem.value,
+        quantity: quantity,
+        reason: transferReason.value,
         status: 'Pending'
     };
 
+    // Add transfer request
     transferRequests.push(transferRequest);
+    
+    // Update source department item quantity
+    sourceItem.quantity -= quantity;
+
+    // Find or create target department item
+    const targetDept = departmentsData.find(d => d.id === parseInt(targetDepartment.value));
+    if (targetDept) {
+        const targetItem = targetDept.items.find(item => item.name.toLowerCase() === transferItem.value.toLowerCase());
+        if (targetItem) {
+            targetItem.quantity += quantity;
+        } else {
+            targetDept.items.push({
+                name: transferItem.value,
+                quantity: quantity
+            });
+        }
+    }
+    
+    // Render transfer requests and departments
     renderTransferRequests();
+    renderDepartments();
+    
+    // Hide modal
     hideItemTransferModal();
+    
+    // Show success notification
     showNotification('Transfer request submitted successfully!');
 }
 
-// Helper function to get department name by ID
-function getDepartmentName(id) {
-    const department = departmentsData.find(d => d.id === parseInt(id));
-    return department ? department.name : 'Unknown';
+// Function to update source items dropdown based on selected department
+function updateSourceItems() {
+    const sourceDepartment = document.getElementById('sourceDepartment');
+    const transferItem = document.getElementById('transferItem');
+    
+    // Clear existing options
+    transferItem.innerHTML = '<option value="">Select Item</option>';
+    
+    // Find the selected department
+    const selectedDept = departmentsData.find(d => d.id === parseInt(sourceDepartment.value));
+    
+    if (selectedDept && selectedDept.items) {
+        // Populate items dropdown
+        selectedDept.items.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.name;
+            option.textContent = `${item.name} (${item.quantity} available)`;
+            transferItem.appendChild(option);
+        });
+    }
 }
 
 // Function to approve transfer request
@@ -328,82 +413,45 @@ function searchDepartments() {
     renderDepartments(filteredDepartments);
 }
 
+// Helper function to get department name by ID
+function getDepartmentName(id) {
+    const department = departmentsData.find(d => d.id === parseInt(id));
+    return department ? department.name : 'Unknown';
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    const addDepartmentForm = document.getElementById('addDepartmentForm');
-    const itemTransferForm = document.getElementById('itemTransferForm');
-    const departmentSearch = document.getElementById('departmentSearch');
-    const departmentFilter = document.getElementById('departmentFilter');
-
     // Initial render
     renderDepartments();
     renderTransferRequests();
 
-    // Form submission listeners
-    addDepartmentForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const editingId = e.target.dataset.editingId;
-        
-        if (editingId) {
-            // Update existing department
-            const departmentIndex = departmentsData.findIndex(d => d.id === parseInt(editingId));
-            if (departmentIndex !== -1) {
-                const formData = new FormData(e.target);
-                departmentsData[departmentIndex] = {
-                    id: parseInt(editingId),
-                    name: formData.get('departmentName'),
-                    head: formData.get('departmentHead'),
-                    description: formData.get('departmentDescription'),
-                    items: departmentsData[departmentIndex].items
-                };
-                renderDepartments();
-                hideAddDepartmentModal();
-                showNotification('Department updated successfully!');
+    // Setup transfer form submission
+    const itemTransferForm = document.getElementById('itemTransferForm');
+    
+    if (itemTransferForm) {
+        itemTransferForm.addEventListener('submit', function(e) {
+            requestItemTransfer(e);
+        });
+    }
+
+    // Setup modal close buttons
+    const closeButtons = document.querySelectorAll('.close-btn');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                if (modal.id === 'itemTransferModal') {
+                    hideItemTransferModal();
+                } else if (modal.id === 'addDepartmentModal') {
+                    hideAddDepartmentModal();
+                }
             }
-            delete e.target.dataset.editingId;
-        } else {
-            // Add new department
-            addDepartment(e);
-        }
-    });
-
-    itemTransferForm.addEventListener('submit', requestItemTransfer);
-
-    // Search and filter listeners
-    departmentSearch.addEventListener('input', searchDepartments);
-    departmentFilter.addEventListener('change', searchDepartments);
-});
-
-// Event Listeners for close buttons
-document.addEventListener('DOMContentLoaded', () => {
-    // Close buttons for modals
-    const modalCloseButtons = document.querySelectorAll('.close-btn');
-    modalCloseButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            modal.classList.remove('active');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
         });
     });
+
+    // Setup source department change event
+    const sourceDepartment = document.getElementById('sourceDepartment');
+    if (sourceDepartment) {
+        sourceDepartment.addEventListener('change', updateSourceItems);
+    }
 });
-
-// Function to add a new department
-function addDepartment(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const newDepartment = {
-        id: departmentsData.length + 1,
-        name: formData.get('departmentName'),
-        head: formData.get('departmentHead'),
-        description: formData.get('departmentDescription'),
-        items: []
-    };
-
-    departmentsData.push(newDepartment);
-    renderDepartments();
-    hideAddDepartmentModal();
-    showNotification('Department added successfully!');
-}
