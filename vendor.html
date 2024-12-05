@@ -237,9 +237,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search vendors...">
-                </div>
+                
                 <div class="header-right">
                     <nav>
                         <a href="#">Product</a>
@@ -264,34 +262,23 @@
             <div class="vendor-page">
                 <div class="page-header">
                     <h1>VENDOR MANAGEMENT</h1>
-                    <div class="header-actions">
-                        <button class="add-item-btn" id="addVendorBtn">
-                            <i class="fas fa-plus"></i>
-                            Add New Vendor
-                        </button>
-                        <button class="export-btn">
-                            <i class="fas fa-file-export"></i>
-                            Export
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Vendor Controls -->
-                <div class="vendor-controls">
-                    <div class="search-filters">
-                        <div class="search-box">
+                    <div class="controls">
+                        <div class="search-container">
+                            <input type="text" id="vendorSearch" placeholder="Search vendors...">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search vendors...">
                         </div>
-                        <div class="filter-group">
+                        <div class="filter-container">
                             <select id="performanceFilter">
-                                <option value="">All Performance</option>
-                                <option value="good">Good</option>
-                                <option value="average">Average</option>
-                                <option value="poor">Poor</option>
-                                <option value="new">New</option>
+                                <option value="all">All Performance</option>
+                                <option value="good">Good Performance</option>
+                                <option value="average">Average Performance</option>
+                                <option value="poor">Poor Performance</option>
+                                <option value="new">New Vendors</option>
                             </select>
                         </div>
+                        <button id="addVendorBtn" onclick="showAddVendorModal()">
+                            <i class="fas fa-plus"></i> Add Vendor
+                        </button>
                     </div>
                 </div>
 
