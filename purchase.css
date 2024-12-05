@@ -1,0 +1,372 @@
+/* Inherit from main styles */
+@import url('styles.css');
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.add-item-btn,
+.export-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-item-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.add-item-btn:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 90%, white 10%);
+}
+
+.export-btn {
+    background-color: #f5f6fa;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.export-btn:hover {
+    background-color: color-mix(in srgb, #f5f6fa 90%, black 10%);
+}
+
+/* Search and Filters */
+.inventory-controls {
+    margin-bottom: 20px;
+}
+
+.search-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-box {
+    position: relative;
+    flex-grow: 1;
+    margin-right: 20px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color-light);
+}
+
+.filter-group {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-group select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+}
+
+/* Inventory Grid */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.inventory-grid .item-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(56, 57, 126, 0.1);
+    padding: 20px;
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.inventory-grid .item-card:hover {
+    transform: translateY(-2px);
+}
+
+.item-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.item-card .card-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.item-card .status-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-tag.pending {
+    background: rgba(245, 124, 0, 0.1);
+    color: #f57c00;
+}
+
+.status-tag.approved {
+    background: rgba(46, 125, 50, 0.1);
+    color: #2e7d32;
+}
+
+.status-tag.completed {
+    background: rgba(25, 118, 210, 0.1);
+    color: #1976d2;
+}
+
+.status-tag.cancelled {
+    background: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+}
+
+.item-card .card-details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.item-card .card-details .label {
+    color: var(--text-color-light);
+    font-weight: 500;
+}
+
+.item-card .card-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.item-card .card-actions button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.item-card .card-actions button:hover {
+    color: var(--primary-color);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+} 
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+    animation: 
+        fadeIn 0.3s forwards;
+}
+
+.modal.closing {
+    animation: 
+        fadeOut 0.3s forwards;
+}
+
+.modal-content {
+    transform: scale(0.8);
+    opacity: 0;
+    transition: 
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+        opacity 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal.closing .modal-content {
+    transform: scale(0.8);
+    opacity: 0;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.cancel-btn,
+.submit-btn,
+.delete-btn {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn {
+    background-color: #f5f6fa;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.submit-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-confirm {
+    text-align: center;
+}
+
+.delete-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.delete-icon i {
+    font-size: 48px;
+    color: #f44336;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .inventory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+}

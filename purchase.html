@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Management - Hotel Warehouse</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="purchase.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="Hotel Warehouse Logo">
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="inventory.html">
+                    <i class="fas fa-boxes"></i>
+                    Inventory
+                </a>
+                <a href="vendor.html">
+                    <i class="fas fa-truck"></i>
+                    Vendors
+                </a>
+                <a href="purchase.html" class="active">
+                    <i class="fas fa-shopping-cart"></i>
+                    Purchases
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-right">
+                    <nav>
+                        <a href="#">Product</a>
+                        <a href="#">Services</a>
+                        <a href="#">About</a>
+                    </nav>
+                    <div class="user-actions">
+                        <div class="notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">1</span>
+                        </div>
+                        <div class="user-profile">
+                            <img src="assets/avatar.png" alt="User">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <div class="purchase-page">
+                <div class="page-header">
+                    <h1>PURCHASE MANAGEMENT</h1>
+                    <div class="header-actions">
+                        <button id="addPurchaseBtn" class="add-item-btn" onclick="showAddPurchaseModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Purchase Order
+                        </button>
+                        <button class="export-btn">
+                            <i class="fas fa-file-export"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="inventory-controls">
+                    <div class="search-filters">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="purchaseSearch" placeholder="Search purchase orders...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="vendorFilter">
+                                <option value="">All Vendors</option>
+                                <!-- Vendor options will be dynamically populated -->
+                            </select>
+                            <select id="purchaseStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="purchaseGrid" class="inventory-grid">
+                    <!-- Purchases will be dynamically added here -->
+                </div>
+
+                <!-- Add/Edit Purchase Modal -->
+                <div id="addPurchaseModal" class="modal">
+                    <div class="modal-content">
+                        <h2>Add New Purchase Order</h2>
+                        <form id="purchaseForm">
+                            <div class="form-group">
+                                <label>Vendor*</label>
+                                <select id="vendorSelect" required>
+                                    <option value="">Select Vendor</option>
+                                    <!-- Vendors will be dynamically populated -->
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Item Name*</label>
+                                    <input type="text" id="itemName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity*</label>
+                                    <input type="number" id="quantity" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Unit Price*</label>
+                                    <input type="number" id="unitPrice" step="0.01" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expected Delivery Date*</label>
+                                    <input type="date" id="expectedDelivery" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Status*</label>
+                                <select id="purchaseStatus" required>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Additional Notes</label>
+                                <textarea id="notes" rows="3"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" onclick="hideAddPurchaseModal()">Cancel</button>
+                                <button type="submit" class="submit-btn">Add Purchase Order</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div id="deleteConfirmModal" class="modal">
+                    <div class="modal-content delete-confirm">
+                        <div class="delete-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h2>Confirm Delete</h2>
+                        <p>Are you sure you want to delete this purchase order? This action cannot be undone.</p>
+                        <div class="item-preview">
+                            <span class="item-name"></span>
+                            <span class="item-details"></span>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" onclick="hideDeleteModal()">Cancel</button>
+                            <button type="button" class="delete-btn confirm-delete" onclick="confirmDeletePurchase()">Delete Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="purchase.js"></script>
+</body>
+</html>
