@@ -1,10 +1,13 @@
 // Vendor card template
 function createVendorCardElement(vendor) {
+    const performanceClass = vendor.performance.toLowerCase();
+    const performanceLabel = vendor.performance.charAt(0).toUpperCase() + vendor.performance.slice(1);
+    
     return `
         <div class="vendor-card">
             <h3>
                 ${vendor.name}
-                <span class="tag">${vendor.performance}</span>
+                <span class="tag ${performanceClass}">${performanceLabel}</span>
             </h3>
             <div class="vendor-info">
                 <span class="label">Contact Person:</span>
@@ -49,7 +52,217 @@ let vendors = [
         bankAccount: "BANK1234567",
         performance: "good",
         lastDelivery: "2024-01-15"
-    }
+    },
+    {
+        id: 2,
+        name: "Best Products Inc.",
+        contactPerson: "Jane Smith",
+        email: "jane@bestproducts.com",
+        phone: "234-567-8901",
+        address: "456 Industrial Dr, City, Country",
+        bankAccount: "BANK9012345",
+        performance: "average",
+        lastDelivery: "2023-12-20"
+    },
+    {
+        id: 3,
+        name: "Superior Supplies Co.",
+        contactPerson: "Bob Williams",
+        email: "bob@superiorsupplies.com",
+        phone: "345-678-9012",
+        address: "789 Warehouse Rd, City, Country",
+        bankAccount: "BANK2345678",
+        performance: "poor",
+        lastDelivery: "2023-11-15"
+    },
+    {
+        id: 4,
+        name: "Quality Products Inc.",
+        contactPerson: "Samantha Lee",
+        email: "samantha@qualityproducts.com",
+        phone: "456-789-0123",
+        address: "901 Main St, City, Country",
+        bankAccount: "BANK3456789",
+        performance: "good",
+        lastDelivery: "2024-02-01"
+    },
+    {
+        id: 5,
+        name: "Reliable Resources Co.",
+        contactPerson: "David Kim",
+        email: "david@reliableresources.com",
+        phone: "567-890-1234",
+        address: "0111 Logistics Dr, City, Country",
+        bankAccount: "BANK4567890",
+        performance: "average",
+        lastDelivery: "2023-12-12"
+    },
+    {
+        id: 6,
+        name: "Professional Products Inc.",
+        contactPerson: "Emily Chen",
+        email: "emily@proproducts.com",
+        phone: "678-901-2345",
+        address: "1213 Supply St, City, Country",
+        bankAccount: "BANK5678901",
+        performance: "poor",
+        lastDelivery: "2023-10-15"
+    },
+    {
+        id: 7,
+        name: "Advanced Supplies Co.",
+        contactPerson: "Michael Davis",
+        email: "michael@advancedsupplies.com",
+        phone: "789-012-3456",
+        address: "1415 Industrial Dr, City, Country",
+        bankAccount: "BANK6789012",
+        performance: "good",
+        lastDelivery: "2024-01-15"
+    },
+    {
+        id: 8,
+        name: "Elite Products Inc.",
+        contactPerson: "Sarah Taylor",
+        email: "sarah@eliteproducts.com",
+        phone: "890-123-4567",
+        address: "1617 Logistics Dr, City, Country",
+        bankAccount: "BANK7890123",
+        performance: "average",
+        lastDelivery: "2023-11-20"
+    },
+    {
+        id: 9,
+        name: "Ultimate Resources Co.",
+        contactPerson: "Kevin Brown",
+        email: "kevin@ultimateresources.com",
+        phone: "901-234-5678",
+        address: "1819 Supply St, City, Country",
+        bankAccount: "BANK8901234",
+        performance: "poor",
+        lastDelivery: "2023-10-20"
+    },
+    {
+        id: 10,
+        name: "Prime Products Inc.",
+        contactPerson: "Lisa Nguyen",
+        email: "lisa@primeproducts.com",
+        phone: "012-345-6789",
+        address: "2011 Industrial Dr, City, Country",
+        bankAccount: "BANK9012345",
+        performance: "good",
+        lastDelivery: "2024-02-01"
+    },
+    {
+        id: 11,
+        name: "Best Solutions Co.",
+        contactPerson: "James Smith",
+        email: "james@bestsolutions.com",
+        phone: "123-456-7890",
+        address: "2213 Logistics Dr, City, Country",
+        bankAccount: "BANK0123456",
+        performance: "average",
+        lastDelivery: "2023-12-15"
+    },
+    {
+        id: 12,
+        name: "Superior Solutions Inc.",
+        contactPerson: "Amy Lee",
+        email: "amy@superiorsolutions.com",
+        phone: "234-567-8901",
+        address: "2415 Supply St, City, Country",
+        bankAccount: "BANK1234567",
+        performance: "poor",
+        lastDelivery: "2023-11-15"
+    },
+    {
+        id: 13,
+        name: "Quality Solutions Co.",
+        contactPerson: "Brian Kim",
+        email: "brian@qualitysolutions.com",
+        phone: "345-678-9012",
+        address: "2617 Industrial Dr, City, Country",
+        bankAccount: "BANK2345678",
+        performance: "good",
+        lastDelivery: "2024-01-15"
+    },
+    {
+        id: 14,
+        name: "Professional Solutions Inc.",
+        contactPerson: "Christine Chen",
+        email: "christine@prosolutions.com",
+        phone: "456-789-0123",
+        address: "2819 Logistics Dr, City, Country",
+        bankAccount: "BANK3456789",
+        performance: "average",
+        lastDelivery: "2023-12-20"
+    },
+    {
+        id: 15,
+        name: "Advanced Solutions Co.",
+        contactPerson: "Michael Davis",
+        email: "michael@advancedsolutions.com",
+        phone: "567-890-1234",
+        address: "3011 Supply St, City, Country",
+        bankAccount: "BANK4567890",
+        performance: "poor",
+        lastDelivery: "2023-10-20"
+    },
+    {
+        id: 16,
+        name: "Elite Solutions Inc.",
+        contactPerson: "Sarah Taylor",
+        email: "sarah@elitesolutions.com",
+        phone: "678-901-2345",
+        address: "3213 Industrial Dr, City, Country",
+        bankAccount: "BANK5678901",
+        performance: "good",
+        lastDelivery: "2024-02-01"
+    },
+    {
+        id: 17,
+        name: "Ultimate Solutions Co.",
+        contactPerson: "Kevin Brown",
+        email: "kevin@ultimatesolutions.com",
+        phone: "789-012-3456",
+        address: "3415 Logistics Dr, City, Country",
+        bankAccount: "BANK6789012",
+        performance: "average",
+        lastDelivery: "2023-11-20"
+    },
+    {
+        id: 18,
+        name: "Prime Solutions Inc.",
+        contactPerson: "Lisa Nguyen",
+        email: "lisa@primesolutions.com",
+        phone: "890-123-4567",
+        address: "3617 Supply St, City, Country",
+        bankAccount: "BANK7890123",
+        performance: "poor",
+        lastDelivery: "2023-10-15"
+    },
+    {
+        id: 19,
+        name: "Best Solutions Co.",
+        contactPerson: "James Smith",
+        email: "james@bestsolutions.com",
+        phone: "901-234-5678",
+        address: "3819 Industrial Dr, City, Country",
+        bankAccount: "BANK8901234",
+        performance: "good",
+        lastDelivery: "2024-01-15"
+    },
+    {
+        id: 20,
+        name: "Superior Solutions Inc.",
+        contactPerson: "Amy Lee",
+        email: "amy@superiorsolutions.com",
+        phone: "012-345-6789",
+        address: "4011 Logistics Dr, City, Country",
+        bankAccount: "BANK9012345",
+        performance: "average",
+        lastDelivery: "2023-12-15"
+    },
+
 ];
 
 // Initialize the vendor page
@@ -58,13 +271,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedData = localStorage.getItem('vendorData');
     if (storedData) {
         vendors = JSON.parse(storedData);
+    }else{
+        localStorage.setItem('vendorData', JSON.stringify(vendors));
     }
 
     // Setup event listeners
     setupEventListeners();
 
     // Initial render
-    renderVendors();
+    renderVendors(vendors);
     updateStats();
 });
 
@@ -137,8 +352,23 @@ function updateStats() {
     const activeVendors = vendors.filter(v => v.performance === 'good').length;
     const newVendors = vendors.filter(v => v.performance === 'new').length;
 
-    // Update stats in the UI if you have stats elements
-    // Add code here to update your statistics display
+    // Update stats in the UI
+    document.getElementById('totalVendors').textContent = totalVendors;
+    document.getElementById('activeVendors').textContent = activeVendors;
+    document.getElementById('newVendors').textContent = newVendors;
+
+    // Update stat card colors
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => {
+        const icon = card.querySelector('.stat-icon');
+        if (card.querySelector('h3').textContent.includes('Total')) {
+            icon.style.background = '#6366f1'; // Purple for total
+        } else if (card.querySelector('h3').textContent.includes('Active')) {
+            icon.style.background = '#22c55e'; // Green for active
+        } else if (card.querySelector('h3').textContent.includes('New')) {
+            icon.style.background = '#3b82f6'; // Blue for new
+        }
+    });
 }
 
 function showAddVendorModal() {
@@ -191,7 +421,7 @@ function handleAddVendor(e) {
         const newVendor = {
             id: vendors.length + 1,
             ...vendorData,
-            performance: 'new',
+            performance: 'new', // New vendors start with 'new' status
             lastDelivery: 'N/A'
         };
         vendors.push(newVendor);
