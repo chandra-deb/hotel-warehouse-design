@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warehouse Reports - Hotel Management System</title>
+    <link rel="stylesheet" href="reports.css" />
+    <style>
+      .background-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.3;
+        background: linear-gradient(
+          60deg,
+          #ff0080,
+          /* Hot pink */ #ff8c00,
+          /* Dark orange */ #40e0d0,
+          /* Turquoise */ #7b68ee,
+          /* Medium slate blue */ #ff1493 /* Deep pink */
+        );
+        background-size: 300% 300%;
+        animation: gradientBG 20s ease infinite;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(8px);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .report-card {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s, background 0.2s;
+      }
+
+      .report-card:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+      }
+
+      .analysis-section {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(5px);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      table {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(4px);
+      }
+
+      .chart-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        margin: 20px;
+      }
+
+      .export-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .export-btn:hover {
+        background-color: #3e8e41;
+      }
+
+      .metric-card {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .metric-trend {
+        width: 100%;
+        height: 10px;
+        background-color: #ccc;
+        border-radius: 5px;
+      }
+    </style>
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add custom reports.js -->
+    <script src="reports.js" defer></script>
+  </head>
+  <body>
+    <div class="background-animation"></div>
+
+    <header>
+      <nav class="navbar">
+        <div class="logo">HMS</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="inventory.html">Inventory</a></li>
+          <li><a href="reports.html" class="active">Reports</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Warehouse Reports & Analysis</h1>
+
+      <section class="reports-grid">
+        <div class="report-card">
+          <h2>Inventory Status</h2>
+          <div class="report-content">
+            <button onclick="generateInventoryReport()">
+              Generate Balance Sheet
+            </button>
+            <button onclick="generateMovementReport()">
+              Item Movement Report
+            </button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <h2>Supplier Performance</h2>
+          <div class="report-content">
+            <button onclick="generateSupplierReport()">
+              Supplier Analysis
+            </button>
+            <button onclick="generateDeliveryReport()">
+              Delivery Timeline Report
+            </button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <h2>Stock Alerts</h2>
+          <div class="report-content" id="stockAlerts">
+            <!-- Dynamic content for stock alerts -->
+          </div>
+        </div>
+
+        <div class="report-card">
+          <h2>Purchase Orders</h2>
+          <div class="report-content">
+            <button onclick="generatePOReport()">PO Status Report</button>
+            <button onclick="generateOrderHistory()">Order History</button>
+          </div>
+        </div>
+
+        <!-- Add new report cards -->
+        <div class="report-card">
+          <h2>Quality Control</h2>
+          <div class="report-content">
+            <button onclick="generateQCReport()">Quality Check Report</button>
+            <button onclick="viewRejectedItems()">Rejected Items Log</button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <h2>Department Requests</h2>
+          <div class="report-content">
+            <button onclick="viewDepartmentRequests()">Request Status</button>
+            <button onclick="generateDeliveryLog()">
+              Internal Delivery Log
+            </button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <h2>Expiry Tracking</h2>
+          <div class="report-content">
+            <button onclick="checkExpiryDates()">Expiry Alert Report</button>
+            <div id="expiryAlerts" class="alert-box"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- New detailed analysis sections -->
+      <section class="analysis-section">
+        <h2>Real-time Analytics Dashboard</h2>
+        <div class="analytics-grid">
+          <div class="chart-container">
+            <h3>Inventory Trend (30 Days)</h3>
+            <svg id="inventoryTrendChart" width="100%" height="300">
+              <g class="grid-lines"></g>
+              <g class="data-points"></g>
+              <g class="axis x-axis"></g>
+              <g class="axis y-axis"></g>
+              <path class="trend-line"></path>
+            </svg>
+          </div>
+          <div class="chart-container">
+            <h3>Supplier Performance</h3>
+            <svg id="supplierPerformanceChart" width="100%" height="300">
+              <g class="radar-grid"></g>
+              <g class="data-area"></g>
+              <g class="data-points"></g>
+              <g class="labels"></g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <h2>Critical Metrics</h2>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <h3>Stock Efficiency</h3>
+            <svg class="gauge-chart" width="150" height="150">
+              <circle class="gauge-background" cx="75" cy="75" r="65"></circle>
+              <path class="gauge-progress"></path>
+              <text class="gauge-value" x="75" y="85" text-anchor="middle">0%</text>
+            </svg>
+          </div>
+          <div class="metric-card">
+            <h3>Order Fulfillment</h3>
+            <svg class="gauge-chart" width="150" height="150">
+              <circle class="gauge-background" cx="75" cy="75" r="65"></circle>
+              <path class="gauge-progress"></path>
+              <text class="gauge-value" x="75" y="85" text-anchor="middle">0%</text>
+            </svg>
+          </div>
+          <div class="metric-card">
+            <h3>Quality Rating</h3>
+            <svg class="gauge-chart" width="150" height="150">
+              <circle class="gauge-background" cx="75" cy="75" r="65"></circle>
+              <path class="gauge-progress"></path>
+              <text class="gauge-value" x="75" y="85" text-anchor="middle">0%</text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <h2>Supplier Analytics</h2>
+        <div class="supplier-metrics">
+          <div id="supplierPerformanceChart" class="chart"></div>
+          <div id="deliveryTimeline" class="chart"></div>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <h2>Procurement Analytics</h2>
+        <div class="procurement-dashboard">
+          <div class="metric-card">
+            <h3>Purchase Orders Status</h3>
+            <div id="poStatus"></div>
+          </div>
+          <div class="metric-card">
+            <h3>Order Fulfillment Rate</h3>
+            <div id="fulfillmentRate"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <h2>Interdepartmental Transfers</h2>
+        <div class="transfer-log">
+          <table id="transferTable">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Items</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transferData">
+              <!-- Dynamic content -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Hotel Management System</p>
+    </footer>
+
+    <script>
+      // Background Animation
+      function animateBackground() {
+        const svg = document.querySelector(".background-animation");
+        const pattern = document.getElementById("dots");
+        let offset = 0;
+
+        function animate() {
+          offset = (offset + 0.5) % 50;
+          pattern.setAttribute("x", offset.toString());
+          pattern.setAttribute("y", (offset * 0.5).toString());
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Add interactive movement based on mouse position
+        document.addEventListener("mousemove", (e) => {
+          const mouseX = e.clientX / window.innerWidth;
+          const mouseY = e.clientY / window.innerHeight;
+
+          pattern.setAttribute("x", (offset + mouseX * 10).toString());
+          pattern.setAttribute("y", (offset + mouseY * 10).toString());
+        });
+      }
+
+      // Initialize animation after page load
+      window.addEventListener("load", animateBackground);
+    </script>
+    <script src="scripts.js"></script>
+  </body>
+</html>
