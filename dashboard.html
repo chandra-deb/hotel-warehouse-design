@@ -508,6 +508,57 @@
             pointer-events: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
+
+        .turnover-chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            grid-column: 1 / -1;
+        }
+
+        .turnover-chart {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .turnover-chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .turnover-line {
+            fill: none;
+            stroke-width: 2.5;
+            transition: all 0.3s ease;
+        }
+
+        .turnover-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .turnover-point:hover {
+            r: 6;
+        }
+
+        .turnover-tooltip {
+            position: absolute;
+            background: #2d3436;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -574,6 +625,15 @@
                     <svg class="stacked-chart-svg" id="stackedChart"></svg>
                 </div>
                 <div class="legend" id="stackedChartLegend"></div>
+            </div>
+            <div class="turnover-chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">Inventory Turnover Rate</h2>
+                </div>
+                <div class="turnover-chart">
+                    <svg class="turnover-chart-svg" id="turnoverChart"></svg>
+                </div>
+                <div class="legend" id="turnoverLegend"></div>
             </div>
         </div>
     </div>
@@ -1349,6 +1409,176 @@
             });
         }
 
+        // Add sample turnover rate data
+        const turnoverData = {
+            categories: ['Electronics', 'Furniture', 'Clothing', 'Books', 'Sports'],
+            months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            data: {
+                Electronics: [4.2, 4.5, 4.8, 4.3, 4.6, 5.0, 4.7, 4.9, 5.2, 4.8, 5.1, 5.3],
+                Furniture: [2.1, 2.3, 2.0, 2.4, 2.6, 2.2, 2.5, 2.7, 2.4, 2.8, 2.5, 2.9],
+                Clothing: [6.1, 6.4, 6.2, 6.7, 6.5, 6.8, 6.3, 6.9, 7.1, 6.6, 7.0, 7.2],
+                Books: [3.5, 3.8, 3.6, 3.9, 3.7, 4.0, 3.8, 4.1, 3.9, 4.2, 4.0, 4.3],
+                Sports: [5.1, 5.3, 5.0, 5.4, 5.2, 5.5, 5.3, 5.6, 5.4, 5.7, 5.5, 5.8]
+            }
+        };
+
+        function createTurnoverChart() {
+            const svg = document.getElementById('turnoverChart');
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+            const padding = { top: 40, right: 60, bottom: 40, left: 60 };
+            
+            // Clear previous content
+            svg.innerHTML = '';
+            
+            // Find min and max values for scaling
+            const allValues = Object.values(turnoverData.data).flat();
+            const minValue = Math.floor(Math.min(...allValues));
+            const maxValue = Math.ceil(Math.max(...allValues));
+            
+            // Calculate scales
+            const xScale = (width - padding.left - padding.right) / (turnoverData.months.length - 1);
+            const yScale = (height - padding.top - padding.bottom) / (maxValue - minValue);
+            
+            // Create axes
+            const axisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            
+            // Y-axis
+            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            yAxis.setAttribute('x1', padding.left);
+            yAxis.setAttribute('y1', padding.top);
+            yAxis.setAttribute('x2', padding.left);
+            yAxis.setAttribute('y2', height - padding.bottom);
+            yAxis.setAttribute('class', 'axis-line');
+            axisGroup.appendChild(yAxis);
+            
+            // X-axis
+            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxis.setAttribute('x1', padding.left);
+            xAxis.setAttribute('y1', height - padding.bottom);
+            xAxis.setAttribute('x2', width - padding.right);
+            xAxis.setAttribute('y2', height - padding.bottom);
+            xAxis.setAttribute('class', 'axis-line');
+            axisGroup.appendChild(xAxis);
+            
+            // Add month labels
+            turnoverData.months.forEach((month, i) => {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left + (i * xScale));
+                text.setAttribute('y', height - padding.bottom + 20);
+                text.setAttribute('class', 'axis-text');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = month;
+                axisGroup.appendChild(text);
+            });
+            
+            // Add turnover rate labels
+            for (let i = 0; i <= 5; i++) {
+                const value = minValue + ((maxValue - minValue) * i / 5);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left - 10);
+                text.setAttribute('y', height - padding.bottom - (i * (height - padding.top - padding.bottom) / 5));
+                text.setAttribute('text-anchor', 'end');
+                text.setAttribute('alignment-baseline', 'middle');
+                text.setAttribute('class', 'axis-text');
+                text.textContent = value.toFixed(1);
+                axisGroup.appendChild(text);
+                
+                // Add grid line
+                const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                gridLine.setAttribute('x1', padding.left);
+                gridLine.setAttribute('y1', height - padding.bottom - (i * (height - padding.top - padding.bottom) / 5));
+                gridLine.setAttribute('x2', width - padding.right);
+                gridLine.setAttribute('y2', height - padding.bottom - (i * (height - padding.top - padding.bottom) / 5));
+                gridLine.setAttribute('class', 'axis-line');
+                gridLine.setAttribute('stroke-opacity', '0.1');
+                axisGroup.appendChild(gridLine);
+            }
+            
+            svg.appendChild(axisGroup);
+            
+            // Draw lines for each category
+            Object.entries(turnoverData.data).forEach(([category, values]) => {
+                const color = inventoryData.find(item => item.category === category)?.color || '#000';
+                
+                // Create the line path
+                let pathD = `M ${padding.left} ${height - padding.bottom - ((values[0] - minValue) * yScale)}`;
+                values.forEach((value, index) => {
+                    if (index > 0) {
+                        pathD += ` L ${padding.left + (index * xScale)} ${height - padding.bottom - ((value - minValue) * yScale)}`;
+                    }
+                });
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathD);
+                path.setAttribute('class', 'turnover-line');
+                path.setAttribute('stroke', color);
+                svg.appendChild(path);
+                
+                // Add points with tooltips
+                values.forEach((value, index) => {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    const cx = padding.left + (index * xScale);
+                    const cy = height - padding.bottom - ((value - minValue) * yScale);
+                    
+                    circle.setAttribute('cx', cx);
+                    circle.setAttribute('cy', cy);
+                    circle.setAttribute('r', 4);
+                    circle.setAttribute('fill', color);
+                    circle.setAttribute('class', 'turnover-point');
+                    
+                    // Add hover effect with tooltip
+                    circle.addEventListener('mouseover', (e) => {
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'turnover-tooltip';
+                        tooltip.style.left = `${e.pageX + 10}px`;
+                        tooltip.style.top = `${e.pageY - 10}px`;
+                        tooltip.innerHTML = `
+                            <strong>${category}</strong><br>
+                            Month: ${turnoverData.months[index]}<br>
+                            Turnover Rate: ${value.toFixed(2)}
+                        `;
+                        document.body.appendChild(tooltip);
+                        
+                        setTimeout(() => {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.visibility = 'visible';
+                        }, 0);
+                    });
+                    
+                    circle.addEventListener('mousemove', (e) => {
+                        const tooltip = document.querySelector('.turnover-tooltip');
+                        if (tooltip) {
+                            tooltip.style.left = `${e.pageX + 10}px`;
+                            tooltip.style.top = `${e.pageY - 10}px`;
+                        }
+                    });
+                    
+                    circle.addEventListener('mouseout', () => {
+                        const tooltip = document.querySelector('.turnover-tooltip');
+                        if (tooltip) tooltip.remove();
+                    });
+                    
+                    svg.appendChild(circle);
+                });
+            });
+            
+            // Create legend
+            const legendContainer = document.getElementById('turnoverLegend');
+            legendContainer.innerHTML = '';
+            
+            turnoverData.categories.forEach(category => {
+                const color = inventoryData.find(item => item.category === category)?.color || '#000';
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div class="legend-color" style="background: ${color};"></div>
+                    <span>${category}</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+        }
+
         // Update the window load event listener
         window.addEventListener('load', () => {
             createInventoryChart();
@@ -1357,6 +1587,7 @@
             createRadarChart();
             createFunnelChart();
             createStackedChart();
+            createTurnoverChart();
         });
 
         // Update the resize listener
@@ -1365,6 +1596,7 @@
             createRadarChart();
             createFunnelChart();
             createStackedChart();
+            createTurnoverChart();
         });
     </script>
 </body>
