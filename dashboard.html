@@ -463,6 +463,51 @@
             z-index: 100;
             pointer-events: none;
         }
+
+        .stacked-chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            grid-column: 1 / -1;
+        }
+
+        .stacked-chart {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .stacked-chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .stacked-bar {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stacked-bar:hover {
+            filter: brightness(1.1);
+        }
+
+        .stacked-tooltip {
+            position: absolute;
+            background: #2d3436;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -520,6 +565,15 @@
                 <div class="funnel-chart">
                     <svg class="funnel-chart-svg" id="funnelChart"></svg>
                 </div>
+            </div>
+            <div class="stacked-chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">Interdepartmental Requests</h2>
+                </div>
+                <div class="stacked-chart">
+                    <svg class="stacked-chart-svg" id="stackedChart"></svg>
+                </div>
+                <div class="legend" id="stackedChartLegend"></div>
             </div>
         </div>
     </div>
@@ -1116,6 +1170,185 @@
             });
         }
 
+        // Add sample interdepartmental request data
+        const departmentData = {
+            departments: ['IT', 'HR', 'Finance', 'Operations', 'Marketing', 'Sales', 'R&D', 'Legal'],
+            requestTypes: [
+                {
+                    name: 'Equipment',
+                    color: '#4834d4',
+                    values: [145, 85, 125, 150, 130, 135, 140, 120]
+                },
+                {
+                    name: 'Office Supplies',
+                    color: '#00b894',
+                    values: [130, 140, 135, 155, 125, 145, 120, 130]
+                },
+                {
+                    name: 'Professional Services',
+                    color: '#fdcb6e',
+                    values: [125, 130, 140, 135, 145, 130, 150, 140]
+                },
+                {
+                    name: 'Software Licenses',
+                    color: '#ff7675',
+                    values: [150, 115, 130, 125, 135, 140, 145, 115]
+                },
+                {
+                    name: 'Training Resources',
+                    color: '#6c5ce7',
+                    values: [120, 145, 115, 130, 140, 125, 130, 135]
+                },
+                {
+                    name: 'Maintenance',
+                    color: '#e17055',
+                    values: [135, 120, 145, 140, 130, 135, 125, 130]
+                },
+                {
+                    name: 'Travel & Events',
+                    color: '#00cec9',
+                    values: [115, 135, 130, 145, 150, 140, 135, 125]
+                }
+            ]
+        };
+
+        function createStackedChart() {
+            const svg = document.getElementById('stackedChart');
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+            const padding = { top: 40, right: 60, bottom: 40, left: 60 };
+            const barPadding = 0.2;
+            
+            // Clear previous content
+            svg.innerHTML = '';
+            
+            // Calculate total values for each department
+            const totals = departmentData.departments.map((_, index) => 
+                departmentData.requestTypes.reduce((sum, type) => sum + type.values[index], 0)
+            );
+            const maxTotal = Math.max(...totals);
+            
+            // Calculate scales
+            const barWidth = (width - padding.left - padding.right) / departmentData.departments.length;
+            
+            // Create axes
+            const axisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            
+            // Y-axis
+            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            yAxis.setAttribute('x1', padding.left);
+            yAxis.setAttribute('y1', padding.top);
+            yAxis.setAttribute('x2', padding.left);
+            yAxis.setAttribute('y2', height - padding.bottom);
+            yAxis.setAttribute('class', 'axis-line');
+            axisGroup.appendChild(yAxis);
+            
+            // X-axis
+            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxis.setAttribute('x1', padding.left);
+            xAxis.setAttribute('y1', height - padding.bottom);
+            xAxis.setAttribute('x2', width - padding.right);
+            xAxis.setAttribute('y2', height - padding.bottom);
+            xAxis.setAttribute('class', 'axis-line');
+            axisGroup.appendChild(xAxis);
+            
+            // Add Y-axis labels
+            for (let i = 0; i <= 5; i++) {
+                const value = Math.round(maxTotal * i / 5);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left - 10);
+                text.setAttribute('y', height - padding.bottom - ((i * (height - padding.top - padding.bottom)) / 5));
+                text.setAttribute('text-anchor', 'end');
+                text.setAttribute('alignment-baseline', 'middle');
+                text.setAttribute('class', 'axis-text');
+                text.textContent = value;
+                axisGroup.appendChild(text);
+            }
+            
+            // Add department labels
+            departmentData.departments.forEach((dept, i) => {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left + (i * barWidth) + (barWidth / 2));
+                text.setAttribute('y', height - padding.bottom + 20);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'axis-text');
+                text.textContent = dept;
+                axisGroup.appendChild(text);
+            });
+            
+            svg.appendChild(axisGroup);
+            
+            // Create stacked bars
+            departmentData.departments.forEach((dept, deptIndex) => {
+                let yOffset = 0;
+                const availableHeight = height - padding.top - padding.bottom;
+                
+                departmentData.requestTypes.forEach((type, typeIndex) => {
+                    const value = type.values[deptIndex];
+                    const barHeight = (value / maxTotal) * availableHeight;
+                    const x = padding.left + (deptIndex * barWidth) + (barWidth * barPadding / 2);
+                    const y = height - padding.bottom - yOffset - barHeight;
+                    const width = barWidth * (1 - barPadding);
+                    
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', x);
+                    rect.setAttribute('y', y);
+                    rect.setAttribute('width', width);
+                    rect.setAttribute('height', barHeight);
+                    rect.setAttribute('fill', type.color);
+                    rect.setAttribute('class', 'stacked-bar');
+                    
+                    // Add hover effect with tooltip
+                    rect.addEventListener('mouseover', (e) => {
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'stacked-tooltip';
+                        tooltip.style.left = `${e.pageX + 10}px`;
+                        tooltip.style.top = `${e.pageY - 10}px`;
+                        tooltip.innerHTML = `
+                            <strong>${dept} - ${type.name}</strong><br>
+                            Requests: ${value}
+                        `;
+                        document.body.appendChild(tooltip);
+                        
+                        setTimeout(() => {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.visibility = 'visible';
+                        }, 0);
+                    });
+                    
+                    rect.addEventListener('mousemove', (e) => {
+                        const tooltip = document.querySelector('.stacked-tooltip');
+                        if (tooltip) {
+                            tooltip.style.left = `${e.pageX + 10}px`;
+                            tooltip.style.top = `${e.pageY - 10}px`;
+                        }
+                    });
+                    
+                    rect.addEventListener('mouseout', () => {
+                        const tooltip = document.querySelector('.stacked-tooltip');
+                        if (tooltip) tooltip.remove();
+                    });
+                    
+                    svg.appendChild(rect);
+                    yOffset += barHeight;
+                });
+            });
+            
+            // Create legend
+            const legendContainer = document.getElementById('stackedChartLegend');
+            legendContainer.innerHTML = '';
+            
+            departmentData.requestTypes.forEach(type => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div class="legend-color" style="background: ${type.color};"></div>
+                    <span>${type.name}</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+        }
+
         // Update the window load event listener
         window.addEventListener('load', () => {
             createInventoryChart();
@@ -1123,6 +1356,7 @@
             createLineChart();
             createRadarChart();
             createFunnelChart();
+            createStackedChart();
         });
 
         // Update the resize listener
@@ -1130,6 +1364,7 @@
             createLineChart();
             createRadarChart();
             createFunnelChart();
+            createStackedChart();
         });
     </script>
 </body>
