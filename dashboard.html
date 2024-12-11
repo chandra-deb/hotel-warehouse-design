@@ -332,6 +332,87 @@
             font-size: 12px;
             fill: #636e72;
         }
+
+        .radar-chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;  /* Increased padding */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            grid-column: 1 / -1;  /* Make it span full width like the line chart */
+        }
+
+        .radar-chart {
+            width: 100%;
+            height: 400px;  /* Increased height */
+            position: relative;
+            margin: 20px 0;  /* Added margin */
+        }
+
+        .radar-chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .radar-area {
+            fill-opacity: 0.3;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .radar-area:hover {
+            fill-opacity: 0.5;
+        }
+
+        .radar-point {
+            fill: white;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            r: 5;  /* Made points slightly bigger */
+        }
+
+        .radar-point:hover {
+            r: 7;  /* Increased hover size */
+        }
+
+        .radar-axis {
+            stroke: #dfe6e9;
+            stroke-width: 1;
+        }
+
+        .radar-circle {
+            fill: none;
+            stroke: #dfe6e9;
+            stroke-width: 1;
+            stroke-dasharray: 4 4;
+        }
+
+        .radar-label {
+            font-size: 14px;  /* Increased font size */
+            fill: #636e72;
+            font-weight: 500;  /* Made labels bolder */
+        }
+
+        .radar-value {
+            font-size: 14px;  /* Increased from 12px */
+            fill: #2d3436;
+            font-weight: 500;  /* Added font weight */
+        }
+
+        /* Add new styles for the radar tooltip */
+        .radar-tooltip {
+            fill: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .radar-tooltip-bg {
+            fill: #2d3436;
+            rx: 4;
+            ry: 4;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -372,6 +453,14 @@
                 </div>
                 <div class="line-chart">
                     <svg class="line-chart-svg" id="lineChart"></svg>
+                </div>
+            </div>
+            <div class="radar-chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">Supplier Performance Metrics</h2>
+                </div>
+                <div class="radar-chart">
+                    <svg class="radar-chart-svg" id="radarChart"></svg>
                 </div>
             </div>
         </div>
@@ -668,16 +757,192 @@
             });
         }
 
-        // Initialize both charts when the page loads
+        // Add sample supplier performance data
+        const supplierData = [
+            {
+                name: 'Supplier A',
+                metrics: {
+                    'Delivery Time': 85,
+                    'Quality': 90,
+                    'Price': 75,
+                    'Communication': 88,
+                    'Reliability': 92
+                },
+                color: '#4834d4'
+            },
+            {
+                name: 'Supplier B',
+                metrics: {
+                    'Delivery Time': 78,
+                    'Quality': 85,
+                    'Price': 90,
+                    'Communication': 72,
+                    'Reliability': 85
+                },
+                color: '#00b894'
+            },
+            {
+                name: 'Supplier C',
+                metrics: {
+                    'Delivery Time': 92,
+                    'Quality': 78,
+                    'Price': 85,
+                    'Communication': 95,
+                    'Reliability': 88
+                },
+                color: '#ff7675'
+            }
+        ];
+
+        function createRadarChart() {
+            const svg = document.getElementById('radarChart');
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(centerX, centerY) - 80;  // Increased padding from edges
+            
+            // Clear previous content
+            svg.innerHTML = '';
+            
+            const metrics = Object.keys(supplierData[0].metrics);
+            const angleStep = (Math.PI * 2) / metrics.length;
+            
+            // Create background circles
+            for (let i = 1; i <= 5; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', centerX);
+                circle.setAttribute('cy', centerY);
+                circle.setAttribute('r', radius * i / 5);
+                circle.setAttribute('class', 'radar-circle');
+                svg.appendChild(circle);
+                
+                // Add value labels
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', centerX + 5);
+                text.setAttribute('y', centerY - (radius * i / 5));
+                text.setAttribute('class', 'radar-value');
+                text.textContent = `${i * 20}`;
+                svg.appendChild(text);
+            }
+            
+            // Create axes and labels
+            metrics.forEach((metric, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                // Draw axis
+                const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                axis.setAttribute('x1', centerX);
+                axis.setAttribute('y1', centerY);
+                axis.setAttribute('x2', x);
+                axis.setAttribute('y2', y);
+                axis.setAttribute('class', 'radar-axis');
+                svg.appendChild(axis);
+                
+                // Add label
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                const labelX = centerX + Math.cos(angle) * (radius + 30);  // Increased label distance
+                const labelY = centerY + Math.sin(angle) * (radius + 30);  // Increased label distance
+                label.setAttribute('x', labelX);
+                label.setAttribute('y', labelY);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'radar-label');
+                label.textContent = metric;
+                svg.appendChild(label);
+            });
+            
+            // Draw supplier data
+            supplierData.forEach(supplier => {
+                const points = metrics.map((metric, i) => {
+                    const angle = i * angleStep - Math.PI / 2;
+                    const value = supplier.metrics[metric];
+                    const distance = (radius * value) / 100;
+                    return {
+                        x: centerX + Math.cos(angle) * distance,
+                        y: centerY + Math.sin(angle) * distance,
+                        value
+                    };
+                });
+                
+                // Create area
+                let pathD = `M ${points[0].x} ${points[0].y}`;
+                points.forEach((point, i) => {
+                    if (i > 0) {
+                        pathD += ` L ${point.x} ${point.y}`;
+                    }
+                });
+                pathD += ' Z';
+                
+                const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                area.setAttribute('d', pathD);
+                area.setAttribute('class', 'radar-area');
+                area.setAttribute('fill', supplier.color);
+                area.setAttribute('stroke', supplier.color);
+                svg.appendChild(area);
+                
+                // Add points with tooltips
+                points.forEach((point, i) => {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', point.x);
+                    circle.setAttribute('cy', point.y);
+                    circle.setAttribute('r', 4);
+                    circle.setAttribute('class', 'radar-point');
+                    circle.setAttribute('stroke', supplier.color);
+                    
+                    // Add tooltip on hover
+                    circle.addEventListener('mouseover', () => {
+                        // Create tooltip group
+                        const tooltipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        tooltipGroup.id = 'radar-tooltip';
+
+                        // Calculate tooltip text for sizing
+                        const tooltipText = `${supplier.name}: ${point.value}%`;
+                        
+                        // Create background
+                        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        bg.setAttribute('class', 'radar-tooltip-bg');
+                        bg.setAttribute('x', point.x - 60);  // Wider background
+                        bg.setAttribute('y', point.y - 30);  // Higher position
+                        bg.setAttribute('width', 120);  // Fixed width
+                        bg.setAttribute('height', 25);
+                        tooltipGroup.appendChild(bg);
+
+                        // Create text
+                        const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        tooltip.setAttribute('x', point.x);
+                        tooltip.setAttribute('y', point.y - 13);  // Adjusted position
+                        tooltip.setAttribute('text-anchor', 'middle');
+                        tooltip.setAttribute('class', 'radar-tooltip');
+                        tooltip.textContent = tooltipText;
+                        tooltipGroup.appendChild(tooltip);
+
+                        svg.appendChild(tooltipGroup);
+                    });
+                    
+                    circle.addEventListener('mouseout', () => {
+                        const tooltip = document.getElementById('radar-tooltip');
+                        if (tooltip) tooltip.remove();
+                    });
+                    
+                    svg.appendChild(circle);
+                });
+            });
+        }
+
+        // Update the window load event listener to include the radar chart
         window.addEventListener('load', () => {
             createInventoryChart();
             updateGauge();
             createLineChart();
+            createRadarChart();
         });
 
-        // Add window resize listener to make the chart responsive
+        // Update the resize listener to include the radar chart
         window.addEventListener('resize', () => {
             createLineChart();
+            createRadarChart();
         });
     </script>
 </body>
