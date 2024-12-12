@@ -401,6 +401,8 @@ function setupEventListeners() {
             }
         });
     }
+    // Add cancel button event listener
+    document.getElementById('cancelBtn').addEventListener('click', hideAddItemModal);
 }
 
 // Render inventory items

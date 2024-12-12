@@ -324,6 +324,162 @@
                 min-width: 100%;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .modal.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #c7d2fe;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #818cf8;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
+            margin: 0 0 24px;
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-content h2 i {
+            color: #6366f1;
+            font-size: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
     </style>
 </head>
 <body>
@@ -560,11 +716,13 @@
                 <!-- Add Item Modal -->
                 <div class="modal" id="addItemModal">
                     <div class="modal-content">
-                        <h2>Add New Item</h2>
+                        <h2><i class="fas fa-box"></i> Add New Item</h2>
                         <form id="addItemForm">
-                            <div class="form-group">
-                                <label>Item Name</label>
-                                <input type="text" name="name" required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Item Name</label>
+                                    <input type="text" name="name" required>
+                                </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -595,9 +753,13 @@
                                 <label>Unit Price</label>
                                 <input type="number" step="0.01" name="unitPrice" required min="0">
                             </div>
-                            <div class="form-actions">
-                                <button type="button" class="cancel-btn">Cancel</button>
-                                <button type="submit" class="submit-btn">Add Item</button>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-secondary" id="cancelBtn">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-plus"></i> Add Item
+                                </button>
                             </div>
                         </form>
                     </div>
