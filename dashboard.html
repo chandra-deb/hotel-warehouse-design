@@ -38,6 +38,12 @@
             gap: 20px;
             margin-bottom: 20px;
         }
+        .dashboard-grid-right{
+            display: grid;
+            grid-gap: 20px;
+            grid-template-rows: 1fr 1fr;
+            margin-bottom: 20px;
+        }
 
         .inventory-section {
             grid-column: span 1;
@@ -382,85 +388,126 @@
             fill: #636e72;
         }
 
-        .radar-chart-container {
+        .supplier-metrics-container {
             background: white;
             border-radius: 12px;
-            padding: 30px; /* Increased padding */
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
-            grid-column: 1 / -1; /* Make it span full width like the line chart */
+            grid-column: 1 / -1;
         }
 
-        .radar-chart {
-            width: 100%;
-            height: 400px; /* Increased height */
+        .metric-group {
+            margin: 20px 0;
             position: relative;
-            margin: 20px 0; /* Added margin */
         }
 
-        .radar-chart-svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .radar-area {
-            fill-opacity: 0.3;
-            stroke-width: 2;
-            transition: all 0.3s ease;
-        }
-
-        .radar-area:hover {
-            fill-opacity: 0.5;
-        }
-
-        .radar-point {
-            fill: white;
-            stroke-width: 2;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            r: 5; /* Made points slightly bigger */
-        }
-
-        .radar-point:hover {
-            r: 7; /* Increased hover size */
-        }
-
-        .radar-axis {
-            stroke: #dfe6e9;
-            stroke-width: 1;
-        }
-
-        .radar-circle {
-            fill: none;
-            stroke: #dfe6e9;
-            stroke-width: 1;
-            stroke-dasharray: 4 4;
-        }
-
-        .radar-label {
-            font-size: 14px; /* Increased font size */
-            fill: #636e72;
-            font-weight: 500; /* Made labels bolder */
-        }
-
-        .radar-value {
-            font-size: 14px; /* Increased from 12px */
-            fill: #2d3436;
-            font-weight: 500; /* Added font weight */
-        }
-
-        /* Add new styles for the radar tooltip */
-        .radar-tooltip {
-            fill: white;
+        .metric-label {
+            display: block;
             font-size: 14px;
+            color: #636e72;
+            margin-bottom: 8px;
             font-weight: 500;
         }
 
-        .radar-tooltip-bg {
-            fill: #2d3436;
-            rx: 4;
-            ry: 4;
-            opacity: 0.9;
+        .supplier-bars {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .supplier-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .supplier-name {
+            font-size: 12px;
+            color: #636e72;
+            margin-bottom: 4px;
+        }
+
+        .metric-bar-container {
+            height: 20px;
+            background: #f1f2f6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .supplier-bar:hover .metric-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .metric-tooltip {
+            position: absolute;
+            background: #2d3436;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -45px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .metric-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #2d3436;
+        }
+
+        .metric-value {
+            font-size: 12px;
+            color: #2d3436;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .metric-trend-up {
+            color: #00b894;
+        }
+
+        .metric-trend-down {
+            color: #ff7675;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #636e72;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
         }
 
         .funnel-chart-container {
@@ -615,6 +662,55 @@
             pointer-events: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
+
+        .stock-alerts {
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pie-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 15px auto;
+        }
+
+        .alert-status {
+            margin-top: 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .alert-status.critical {
+            background: #ffe9e9;
+            color: #ff4757;
+        }
+
+        .alert-status.warning {
+            background: #fff3e0;
+            color: #f39c12;
+        }
+
+        .alert-status.good {
+            background: #e8f5e9;
+            color: #2ecc71;
+        }
+
+        .stock-label {
+            font-size: 0.9rem;
+            color: #636e72;
+            margin-top: 10px;
+        }
+
+        .stock-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2d3436;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -649,31 +745,25 @@
                 </div>
                 <!-- Performance Section -->
                 <div class="dashboard-section performance-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Supplier Performance Metrics</h2>
-                    </div>
-                    <div class="radar-chart">
-                        <svg class="radar-chart-svg" id="radarChart"></svg>
-                    </div>
+                        <h3>Supplier Performance Metrics</h3>
+                        <div class="legend">
+                            <!-- Legend will be added dynamically -->
+                        </div>
+                        <div id="supplierMetrics"></div>
                 </div>
                 <!-- Stock Level Alerts Section -->
                 <div class="dashboard-section gauge-section">
                     <div class="section-header">
                         <h2 class="section-title">Stock Level Alerts</h2>
                     </div>
-                    <div class="gauge-wrapper">
-                        <div class="gauge-tooltip" id="gaugeTooltip">
-                            <!-- Tooltip content will be added dynamically -->
+                    <div class="stock-alerts">
+                        <div class="pie-container">
+                            <canvas id="stockPieChart"></canvas>
                         </div>
-                        <div class="gauge">
-                            <div class="gauge-fill" id="gaugeFill"></div>
-                            <div class="gauge-cover">
-                                <div class="gauge-value" id="gaugeValue">0%</div>
-                            </div>
-                        </div>
+                        <div class="stock-label">Items Below Safety Stock</div>
+                        <div class="stock-value" id="stockValue">0%</div>
+                        <div id="alertStatus" class="alert-status">Calculating...</div>
                     </div>
-                    <div class="gauge-label">Items Below Safety Stock</div>
-                    <div id="alertStatus" class="alert-status">Calculating...</div>
                 </div>
             </div>
             <div class="dashboard-grid-right">
@@ -713,6 +803,9 @@
         </div>
     </main>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
 <script>
     // Sample inventory data with more details and safety stock levels
@@ -820,362 +913,195 @@
     //     });
     // }
 
+    let stockPieChart;
+
     function updateGauge() {
         const itemsBelowSafety = inventoryData.filter(item => item.stock < item.safetyStock);
+        const itemsAboveSafety = inventoryData.filter(item => item.stock >= item.safetyStock);
         const percentage = (itemsBelowSafety.length / inventoryData.length) * 100;
 
-        // Update gauge fill
-        const gaugeFill = document.getElementById('gaugeFill');
-        const gaugeValue = document.getElementById('gaugeValue');
-        const alertStatus = document.getElementById('alertStatus');
-        const gaugeTooltip = document.getElementById('gaugeTooltip');
-
-        // Fix: Adjust the rotation calculation
-        const rotation = (percentage / 100) * 180;
-        gaugeFill.style.transform = `rotate(${rotation}deg)`;
-
         // Update the percentage text
-        gaugeValue.textContent = `${Math.round(percentage)}%`;
+        const stockValue = document.getElementById('stockValue');
+        const alertStatus = document.getElementById('alertStatus');
+        stockValue.textContent = `${Math.round(percentage)}%`;
 
         // Update alert status
-        let statusText, statusClass;
+        let statusText, statusClass, chartColors;
         if (percentage >= 60) {
             statusText = 'Critical Alert';
             statusClass = 'critical';
+            chartColors = ['#ff4757', '#f1f2f6'];
         } else if (percentage >= 30) {
             statusText = 'Warning';
             statusClass = 'warning';
+            chartColors = ['#f39c12', '#f1f2f6'];
         } else {
             statusText = 'Good';
             statusClass = 'good';
+            chartColors = ['#2ecc71', '#f1f2f6'];
         }
 
         alertStatus.textContent = statusText;
         alertStatus.className = `alert-status ${statusClass}`;
 
-        // Create tooltip content
-        const tooltipContent = `
-                <strong>Stock Alert Details</strong><br>
-                Items Below Safety Stock: ${itemsBelowSafety.length}<br>
-                Total Categories: ${inventoryData.length}<br><br>
-                Critical Items:<br>
-                ${itemsBelowSafety.map(item => `
-                    • ${item.category}: ${item.stock}/${item.safetyStock} units
-                `).join('')}
-            `;
+        // Update or create pie chart
+        const ctx = document.getElementById('stockPieChart').getContext('2d');
+        
+        const data = {
+            labels: ['Below Safety Stock', 'Above Safety Stock'],
+            datasets: [{
+                data: [itemsBelowSafety.length, itemsAboveSafety.length],
+                backgroundColor: chartColors,
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        };
 
-        gaugeTooltip.innerHTML = tooltipContent;
+        const config = {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((acc, curr) => acc + curr, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        if (stockPieChart) {
+            stockPieChart.data = data;
+            stockPieChart.update();
+        } else {
+            stockPieChart = new Chart(ctx, config);
+        }
     }
 
-    // Add this sample data for the line chart
-    const movementData = {
-        Electronics: [
-            {month: 'Jan', value: 120},
-            {month: 'Feb', value: 150},
-            {month: 'Mar', value: 180},
-            {month: 'Apr', value: 140},
-            {month: 'May', value: 160},
-            {month: 'Jun', value: 190}
-        ],
-        Furniture: [
-            {month: 'Jan', value: 80},
-            {month: 'Feb', value: 100},
-            {month: 'Mar', value: 90},
-            {month: 'Apr', value: 110},
-            {month: 'May', value: 130},
-            {month: 'Jun', value: 120}
-        ],
-        Clothing: [
-            {month: 'Jan', value: 160},
-            {month: 'Feb', value: 140},
-            {month: 'Mar', value: 170},
-            {month: 'Apr', value: 190},
-            {month: 'May', value: 180},
-            {month: 'Jun', value: 200}
-        ]
+    // Add sample supplier performance data
+    const suppliersData = {
+        'TechPro Solutions': {
+            color: '#6c5ce7',
+            metrics: {
+                'Delivery Time': { value: 85, previousValue: 80, description: 'Average time to deliver orders' },
+                'Quality': { value: 90, previousValue: 92, description: 'Product quality assessment' },
+                'Price': { value: 75, previousValue: 70, description: 'Cost effectiveness rating' },
+                'Communication': { value: 80, previousValue: 75, description: 'Response time and clarity' },
+                'Reliability': { value: 88, previousValue: 85, description: 'Consistency in service' }
+            }
+        },
+        'Global Electronics': {
+            color: '#00b894',
+            metrics: {
+                'Delivery Time': { value: 78, previousValue: 75, description: 'Average time to deliver orders' },
+                'Quality': { value: 95, previousValue: 93, description: 'Product quality assessment' },
+                'Price': { value: 82, previousValue: 80, description: 'Cost effectiveness rating' },
+                'Communication': { value: 88, previousValue: 85, description: 'Response time and clarity' },
+                'Reliability': { value: 92, previousValue: 90, description: 'Consistency in service' }
+            }
+        },
+        'QuickShip Logistics': {
+            color: '#ff7675',
+            metrics: {
+                'Delivery Time': { value: 92, previousValue: 88, description: 'Average time to deliver orders' },
+                'Quality': { value: 85, previousValue: 87, description: 'Product quality assessment' },
+                'Price': { value: 78, previousValue: 75, description: 'Cost effectiveness rating' },
+                'Communication': { value: 83, previousValue: 80, description: 'Response time and clarity' },
+                'Reliability': { value: 87, previousValue: 85, description: 'Consistency in service' }
+            }
+        }
     };
 
-    // function createLineChart() {
-    //     const svg = document.getElementById('lineChart');
-    //     const width = svg.clientWidth;
-    //     const height = svg.clientHeight;
-    //     const padding = 40;
-
-    //     // Clear previous content
-    //     svg.innerHTML = '';
-
-    //     // Find max value for scaling
-    //     const maxValue = Math.max(...Object.values(movementData)
-    //         .flat()
-    //         .map(item => item.value));
-
-    //     // Create scales
-    //     const xScale = (width - padding * 2) / 5;  // 6 months - 1 for spacing
-    //     const yScale = (height - padding * 2) / maxValue;
-
-    //     // Draw axes
-    //     const axisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-    //     // X-axis
-    //     const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    //     xAxis.setAttribute('x1', padding);
-    //     xAxis.setAttribute('y1', height - padding);
-    //     xAxis.setAttribute('x2', width - padding);
-    //     xAxis.setAttribute('y2', height - padding);
-    //     xAxis.setAttribute('class', 'axis-line');
-    //     axisGroup.appendChild(xAxis);
-
-    //     // Y-axis
-    //     const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    //     yAxis.setAttribute('x1', padding);
-    //     yAxis.setAttribute('y1', padding);
-    //     yAxis.setAttribute('x2', padding);
-    //     yAxis.setAttribute('y2', height - padding);
-    //     yAxis.setAttribute('class', 'axis-line');
-    //     axisGroup.appendChild(yAxis);
-
-    //     // Add month labels
-    //     movementData.Electronics.forEach((item, index) => {
-    //         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    //         text.setAttribute('x', padding + index * xScale);
-    //         text.setAttribute('y', height - padding + 20);
-    //         text.setAttribute('class', 'axis-text');
-    //         text.textContent = item.month;
-    //         axisGroup.appendChild(text);
-    //     });
-
-    //     // Add value labels
-    //     for (let i = 0; i <= 5; i++) {
-    //         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    //         text.setAttribute('x', padding - 25);
-    //         text.setAttribute('y', height - padding - (i * (height - padding * 2) / 5));
-    //         text.setAttribute('class', 'axis-text');
-    //         text.textContent = Math.round(i * maxValue / 5);
-    //         axisGroup.appendChild(text);
-    //     }
-
-    //     svg.appendChild(axisGroup);
-
-    //     // Draw lines for each category
-    //     Object.entries(movementData).forEach(([category, data], categoryIndex) => {
-    //         const color = inventoryData.find(item => item.category === category)?.color || '#000';
-
-    //         // Create the line path
-    //         let pathD = `M ${padding + 0 * xScale} ${height - padding - data[0].value * yScale}`;
-    //         data.forEach((item, index) => {
-    //             if (index > 0) {
-    //                 pathD += ` L ${padding + index * xScale} ${height - padding - item.value * yScale}`;
-    //             }
-    //         });
-
-    //         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    //         path.setAttribute('d', pathD);
-    //         path.setAttribute('class', 'line-path');
-    //         path.setAttribute('stroke', color);
-    //         svg.appendChild(path);
-
-    //         // Add points
-    //         data.forEach((item, index) => {
-    //             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    //             circle.setAttribute('cx', padding + index * xScale);
-    //             circle.setAttribute('cy', height - padding - item.value * yScale);
-    //             circle.setAttribute('r', 4);
-    //             circle.setAttribute('fill', color);
-    //             circle.setAttribute('class', 'chart-point');
-
-    //             // Add tooltip on hover
-    //             circle.addEventListener('mouseover', (e) => {
-    //                 const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    //                 tooltip.setAttribute('x', padding + index * xScale);
-    //                 tooltip.setAttribute('y', height - padding - item.value * yScale - 10);
-    //                 tooltip.setAttribute('text-anchor', 'middle');
-    //                 tooltip.setAttribute('class', 'axis-text');
-    //                 tooltip.textContent = `${category}: ${item.value}`;
-    //                 tooltip.id = 'point-tooltip';
-    //                 svg.appendChild(tooltip);
-    //             });
-
-    //             circle.addEventListener('mouseout', () => {
-    //                 const tooltip = document.getElementById('point-tooltip');
-    //                 if (tooltip) tooltip.remove();
-    //             });
-
-    //             svg.appendChild(circle);
-    //         });
-    //     });
-    // }
-
-    // Add sample supplier performance data
-    const supplierData = [
-        {
-            name: 'Supplier A',
-            metrics: {
-                'Delivery Time': 85,
-                'Quality': 90,
-                'Price': 75,
-                'Communication': 88,
-                'Reliability': 92
-            },
-            color: '#4834d4'
-        },
-        {
-            name: 'Supplier B',
-            metrics: {
-                'Delivery Time': 78,
-                'Quality': 85,
-                'Price': 90,
-                'Communication': 72,
-                'Reliability': 85
-            },
-            color: '#00b894'
-        },
-        {
-            name: 'Supplier C',
-            metrics: {
-                'Delivery Time': 92,
-                'Quality': 78,
-                'Price': 85,
-                'Communication': 95,
-                'Reliability': 88
-            },
-            color: '#ff7675'
-        }
-    ];
-
-    function createRadarChart() {
-        const svg = document.getElementById('radarChart');
-        const width = svg.clientWidth;
-        const height = svg.clientHeight;
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const radius = Math.min(centerX, centerY) - 80;  // Increased padding from edges
-
-        // Clear previous content
-        svg.innerHTML = '';
-
-        const metrics = Object.keys(supplierData[0].metrics);
-        const angleStep = (Math.PI * 2) / metrics.length;
-
-        // Create background circles
-        for (let i = 1; i <= 5; i++) {
-            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', centerX);
-            circle.setAttribute('cy', centerY);
-            circle.setAttribute('r', radius * i / 5);
-            circle.setAttribute('class', 'radar-circle');
-            svg.appendChild(circle);
-
-            // Add value labels
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', centerX + 5);
-            text.setAttribute('y', centerY - (radius * i / 5));
-            text.setAttribute('class', 'radar-value');
-            text.textContent = `${i * 20}`;
-            svg.appendChild(text);
-        }
-
-        // Create axes and labels
-        metrics.forEach((metric, i) => {
-            const angle = i * angleStep - Math.PI / 2;
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-
-            // Draw axis
-            const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            axis.setAttribute('x1', centerX);
-            axis.setAttribute('y1', centerY);
-            axis.setAttribute('x2', x);
-            axis.setAttribute('y2', y);
-            axis.setAttribute('class', 'radar-axis');
-            svg.appendChild(axis);
-
-            // Add label
-            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            const labelX = centerX + Math.cos(angle) * (radius + 30);  // Increased label distance
-            const labelY = centerY + Math.sin(angle) * (radius + 30);  // Increased label distance
-            label.setAttribute('x', labelX);
-            label.setAttribute('y', labelY);
-            label.setAttribute('text-anchor', 'middle');
-            label.setAttribute('class', 'radar-label');
-            label.textContent = metric;
-            svg.appendChild(label);
+    function createSupplierMetrics() {
+        const container = document.getElementById('supplierMetrics');
+        const legend = document.querySelector('.legend');
+        const metricNames = Object.keys(Object.values(suppliersData)[0].metrics);
+        
+        // Create legend
+        Object.entries(suppliersData).forEach(([supplierName, data]) => {
+            const legendItem = document.createElement('div');
+            legendItem.className = 'legend-item';
+            
+            const colorBox = document.createElement('div');
+            colorBox.className = 'legend-color';
+            colorBox.style.backgroundColor = data.color;
+            
+            const name = document.createElement('span');
+            name.textContent = supplierName;
+            
+            legendItem.appendChild(colorBox);
+            legendItem.appendChild(name);
+            legend.appendChild(legendItem);
         });
 
-        // Draw supplier data
-        supplierData.forEach(supplier => {
-            const points = metrics.map((metric, i) => {
-                const angle = i * angleStep - Math.PI / 2;
-                const value = supplier.metrics[metric];
-                const distance = (radius * value) / 100;
-                return {
-                    x: centerX + Math.cos(angle) * distance,
-                    y: centerY + Math.sin(angle) * distance,
-                    value
-                };
+        // Create metric groups
+        metricNames.forEach(metricName => {
+            const metricGroup = document.createElement('div');
+            metricGroup.className = 'metric-group';
+            
+            const label = document.createElement('span');
+            label.className = 'metric-label';
+            label.textContent = metricName;
+            
+            const supplierBars = document.createElement('div');
+            supplierBars.className = 'supplier-bars';
+            
+            // Create bars for each supplier
+            Object.entries(suppliersData).forEach(([supplierName, data]) => {
+                const metric = data.metrics[metricName];
+                const supplierBar = document.createElement('div');
+                supplierBar.className = 'supplier-bar';
+                
+                const barContainer = document.createElement('div');
+                barContainer.className = 'metric-bar-container';
+                
+                const bar = document.createElement('div');
+                bar.className = 'metric-bar-fill';
+                bar.style.width = `${metric.value}%`;
+                bar.style.backgroundColor = data.color;
+                
+                const value = document.createElement('div');
+                value.className = 'metric-value';
+                value.textContent = `${metric.value}%`;
+
+                // Create tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'metric-tooltip';
+                const trend = metric.value - metric.previousValue;
+                const trendIcon = trend >= 0 ? '↑' : '↓';
+                const trendClass = trend >= 0 ? 'metric-trend-up' : 'metric-trend-down';
+                tooltip.innerHTML = `
+                    ${supplierName}<br>
+                    ${metric.description}<br>
+                    Current: ${metric.value}%<br>
+                    <span class="${trendClass}">
+                        ${trendIcon} ${Math.abs(trend)}% from last month
+                    </span>
+                `;
+                
+                barContainer.appendChild(bar);
+                supplierBar.appendChild(barContainer);
+                supplierBar.appendChild(value);
+                supplierBar.appendChild(tooltip);
+                supplierBars.appendChild(supplierBar);
             });
-
-            // Create area
-            let pathD = `M ${points[0].x} ${points[0].y}`;
-            points.forEach((point, i) => {
-                if (i > 0) {
-                    pathD += ` L ${point.x} ${point.y}`;
-                }
-            });
-            pathD += ' Z';
-
-            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            area.setAttribute('d', pathD);
-            area.setAttribute('class', 'radar-area');
-            area.setAttribute('fill', supplier.color);
-            area.setAttribute('stroke', supplier.color);
-            svg.appendChild(area);
-
-            // Add points with tooltips
-            points.forEach((point, i) => {
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', point.x);
-                circle.setAttribute('cy', point.y);
-                circle.setAttribute('r', 4);
-                circle.setAttribute('class', 'radar-point');
-                circle.setAttribute('stroke', supplier.color);
-
-                // Add tooltip on hover
-                circle.addEventListener('mouseover', () => {
-                    // Create tooltip group
-                    const tooltipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                    tooltipGroup.id = 'radar-tooltip';
-
-                    // Calculate tooltip text for sizing
-                    const tooltipText = `${supplier.name}: ${point.value}%`;
-
-                    // Create background
-                    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                    bg.setAttribute('class', 'radar-tooltip-bg');
-                    bg.setAttribute('x', point.x - 60);  // Wider background
-                    bg.setAttribute('y', point.y - 30);  // Higher position
-                    bg.setAttribute('width', 120);  // Fixed width
-                    bg.setAttribute('height', 25);
-                    tooltipGroup.appendChild(bg);
-
-                    // Create text
-                    const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    tooltip.setAttribute('x', point.x);
-                    tooltip.setAttribute('y', point.y - 13);  // Adjusted position
-                    tooltip.setAttribute('text-anchor', 'middle');
-                    tooltip.setAttribute('class', 'radar-tooltip');
-                    tooltip.textContent = tooltipText;
-                    tooltipGroup.appendChild(tooltip);
-
-                    svg.appendChild(tooltipGroup);
-                });
-
-                circle.addEventListener('mouseout', () => {
-                    const tooltip = document.getElementById('radar-tooltip');
-                    if (tooltip) tooltip.remove();
-                });
-
-                svg.appendChild(circle);
-            });
+            
+            metricGroup.appendChild(label);
+            metricGroup.appendChild(supplierBars);
+            container.appendChild(metricGroup);
         });
     }
 
@@ -1658,8 +1584,7 @@
     window.addEventListener('load', () => {
         // createInventoryChart();
         updateGauge();
-        // createLineChart();
-        createRadarChart();
+        createSupplierMetrics();
         createFunnelChart();
         createStackedChart();
         createTurnoverChart();
@@ -1667,8 +1592,6 @@
 
     // Update the resize listener
     window.addEventListener('resize', () => {
-        // createLineChart();
-        createRadarChart();
         createFunnelChart();
         createStackedChart();
         createTurnoverChart();
