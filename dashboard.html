@@ -807,11 +807,6 @@
             font-size: 1.2rem;
         }
 
-        .chart-title {
-            font-size: 1.5rem;
-            color: #1a237e;
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
@@ -862,7 +857,7 @@
                     </div>
                     <div class="stock-alerts">
                         <div class="pie-container">
-                            <canvas id="stockPieChart"></canvas>
+                            <svg id="stockPieChart"></svg>
                         </div>
                         <div class="stock-label">Items Below Safety Stock</div>
                         <div class="stock-value" id="stockValue">0%</div>
@@ -910,8 +905,6 @@
 
 <div class="mouse-glow"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
 <script>
     // Sample inventory data with more details and safety stock levels
@@ -1050,60 +1043,87 @@
         alertStatus.textContent = statusText;
         alertStatus.className = `alert-status ${statusClass}`;
 
-        // Update or create pie chart
-        const ctx = document.getElementById('stockPieChart').getContext('2d');
-        
-        const data = {
-            labels: ['Below Safety Stock', 'Above Safety Stock'],
-            datasets: [{
-                data: [itemsBelowSafety.length, itemsAboveSafety.length],
-                backgroundColor: chartColors,
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        };
+        // Create SVG doughnut chart
+        const svg = document.getElementById('stockPieChart');
+        const width = svg.clientWidth;
+        const height = svg.clientHeight;
+        const radius = Math.min(width, height) / 2;
+        const innerRadius = radius * 0.7; // 70% for doughnut hole
 
-        const config = {
-            type: 'doughnut',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw;
-                                const total = context.dataset.data.reduce((acc, curr) => acc + curr, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ${value} (${percentage}%)`;
-                            }
-                        },
-                        titleFont: {
-                            size: 16,
-                            weight: 'bold'
-                        },
-                        bodyFont: {
-                            size: 14
-                        },
-                        padding: 12,
-                        boxPadding: 6
-                    }
-                }
-            }
-        };
+        // Clear previous content
+        svg.innerHTML = '';
 
-        if (stockPieChart) {
-            stockPieChart.data = data;
-            stockPieChart.update();
-        } else {
-            stockPieChart = new Chart(ctx, config);
+        // Create group and move to center
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('transform', `translate(${width/2},${height/2})`);
+
+        // Calculate angles
+        const total = itemsBelowSafety.length + itemsAboveSafety.length;
+        const belowAngle = (itemsBelowSafety.length / total) * 360;
+        const aboveAngle = (itemsAboveSafety.length / total) * 360;
+
+        // Helper function to create arc path
+        function createArc(startAngle, endAngle, radius, innerRadius) {
+            const start = polarToCartesian(radius, startAngle);
+            const end = polarToCartesian(radius, endAngle);
+            const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+
+            const innerStart = polarToCartesian(innerRadius, startAngle);
+            const innerEnd = polarToCartesian(innerRadius, endAngle);
+
+            return `
+                M ${start.x} ${start.y}
+                A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}
+                L ${innerEnd.x} ${innerEnd.y}
+                A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}
+                Z
+            `;
         }
+
+        // Helper function to convert polar to cartesian coordinates
+        function polarToCartesian(radius, angle) {
+            const angleInRadians = (angle - 90) * Math.PI / 180.0;
+            return {
+                x: radius * Math.cos(angleInRadians),
+                y: radius * Math.sin(angleInRadians)
+            };
+        }
+
+        // Create arcs
+        const belowArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        belowArc.setAttribute('d', createArc(0, belowAngle, radius, innerRadius));
+        belowArc.setAttribute('fill', chartColors[0]);
+        g.appendChild(belowArc);
+
+        const aboveArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        aboveArc.setAttribute('d', createArc(belowAngle, 360, radius, innerRadius));
+        aboveArc.setAttribute('fill', chartColors[1]);
+        g.appendChild(aboveArc);
+
+        // Add tooltips
+        const addTooltip = (element, label, value, total) => {
+            element.addEventListener('mouseover', (e) => {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'gauge-tooltip';
+                const percentage = Math.round((value / total) * 100);
+                tooltip.innerHTML = `${label}: ${value} (${percentage}%)`;
+                document.body.appendChild(tooltip);
+
+                const rect = svg.getBoundingClientRect();
+                tooltip.style.left = `${e.clientX}px`;
+                tooltip.style.top = `${e.clientY - 30}px`;
+            });
+
+            element.addEventListener('mouseout', () => {
+                const tooltip = document.querySelector('.gauge-tooltip');
+                if (tooltip) tooltip.remove();
+            });
+        };
+
+        addTooltip(belowArc, 'Below Safety Stock', itemsBelowSafety.length, total);
+        addTooltip(aboveArc, 'Above Safety Stock', itemsAboveSafety.length, total);
+
+        svg.appendChild(g);
     }
 
     // Add sample supplier performance data
