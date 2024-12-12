@@ -280,8 +280,6 @@
     box-shadow: 0 0 0 2px rgba(56, 57, 126, 0.1);
 }
 
-
-
 .form-group input:invalid:focus,
 .form-group select:invalid:focus {
     box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.1);
@@ -465,4 +463,125 @@
     padding: 30px;
     max-width: 500px;
     width: 100%;
-} 
+}
+
+/* Inventory Status Chart Styles */
+.inventory-status-chart {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.inventory-status-chart h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-dot.critical { background-color: #ff4d4d; }
+.status-dot.low { background-color: #ffa500; }
+.status-dot.normal { background-color: #4caf50; }
+.status-dot.expiring { background-color: #ff9800; }
+
+.category-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.category-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.category-section h3 {
+    color: #2c3e50;
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+}
+
+.storage-location {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.storage-location h4 {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+.item-bar {
+    margin-bottom: 12px;
+}
+
+.item-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.quantity {
+    color: #666;
+    font-weight: 500;
+}
+
+.progress-bar {
+    background: #e9ecef;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress.critical { background-color: #ff4d4d; }
+.progress.low { background-color: #ffa500; }
+.progress.normal { background-color: #4caf50; }
+.progress.expiring { background-color: #ff9800; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .category-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-legend {
+        justify-content: center;
+    }
+}

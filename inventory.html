@@ -16,11 +16,12 @@
                 <img src="logo.png" alt="Hotel Warehouse Logo" class="logo">
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
                 <li class="active"><a href="inventory.html"><i class="fas fa-box-open"></i> Inventory</a></li>
                 <li><a href="purchase.html"><i class="fas fa-shopping-cart"></i> Purchases</a></li>
                 <li><a href="vendor.html"><i class="fas fa-truck"></i> Vendors</a></li>
                 <li><a href="departments.html"><i class="fas fa-building"></i> Departments</a></li>
+                <li><a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
             </ul>
         </nav>
 
@@ -60,6 +61,136 @@
                                 <option value="normal">Normal</option>
                                 <option value="excess">Excess</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inventory-status-chart">
+                    <h2>Inventory Status Overview</h2>
+                    <div class="chart-container">
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="status-dot critical"></span>
+                                <span>Critical Stock</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="status-dot low"></span>
+                                <span>Low Stock</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="status-dot normal"></span>
+                                <span>Normal Stock</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="status-dot expiring"></span>
+                                <span>Expiring Soon</span>
+                            </div>
+                        </div>
+                        
+                        <div class="category-charts">
+                            <!-- Food Category -->
+                            <div class="category-section">
+                                <h3>Food Items</h3>
+                                <div class="storage-location">
+                                    <h4>Refrigerated Storage</h4>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Fresh Produce</span>
+                                            <span class="quantity">120 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress normal" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Dairy Products</span>
+                                            <span class="quantity">45 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress expiring" style="width: 30%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Beverages Category -->
+                            <div class="category-section">
+                                <h3>Beverages</h3>
+                                <div class="storage-location">
+                                    <h4>Dry Storage</h4>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Soft Drinks</span>
+                                            <span class="quantity">200 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress normal" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Mineral Water</span>
+                                            <span class="quantity">50 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress low" style="width: 25%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cleaning Supplies Category -->
+                            <div class="category-section">
+                                <h3>Cleaning Supplies</h3>
+                                <div class="storage-location">
+                                    <h4>Chemical Storage</h4>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Detergents</span>
+                                            <span class="quantity">15 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress critical" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Sanitizers</span>
+                                            <span class="quantity">80 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress normal" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Equipment Category -->
+                            <div class="category-section">
+                                <h3>Equipment</h3>
+                                <div class="storage-location">
+                                    <h4>Equipment Storage</h4>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Vacuum Cleaners</span>
+                                            <span class="quantity">8 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress normal" style="width: 70%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="item-bar">
+                                        <div class="item-info">
+                                            <span>Maintenance Tools</span>
+                                            <span class="quantity">25 units</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress low" style="width: 35%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

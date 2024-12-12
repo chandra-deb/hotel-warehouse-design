@@ -1,387 +1,814 @@
 // Enhanced Reports JavaScript
 
-// Chart Data
-const dummyData = {
-    // Simplified to 7 days of data instead of 30
-    inventory: Array.from({ length: 7 }, () => Math.floor(Math.random() * (95 - 75) + 75)),
-    inventoryDetails: [
-        { inStock: 234, ordered: 50, pending: 15, returns: 3 },
-        { inStock: 245, ordered: 45, pending: 12, returns: 2 },
-        { inStock: 228, ordered: 55, pending: 18, returns: 4 },
-        { inStock: 256, ordered: 40, pending: 10, returns: 1 },
-        { inStock: 242, ordered: 48, pending: 14, returns: 3 },
-        { inStock: 238, ordered: 52, pending: 16, returns: 2 },
-        { inStock: 250, ordered: 43, pending: 11, returns: 2 }
-    ],
-    supplier: {
-        metrics: ['Delivery Time', 'Quality', 'Price', 'Response Time', 'Reliability'],
-        values: [85, 90, 78, 88, 92]
-    }
+// Dummy data for Purchase Orders
+const purchaseOrdersData = {
+    currentOrders: [
+        { id: 'PO-2024-001', supplier: 'Linen Plus', items: ['Bed Sheets', 'Towels'], total: 2500, status: 'Pending', date: '2024-01-05' },
+        { id: 'PO-2024-002', supplier: 'ABC Supplies', items: ['Soap', 'Shampoo'], total: 1800, status: 'Approved', date: '2024-01-06' },
+        { id: 'PO-2024-003', supplier: 'XYZ Corp', items: ['Cleaning Supplies'], total: 3200, status: 'Delivered', date: '2024-01-07' }
+    ]
 };
 
-// Initialize all charts
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLineChart();
-    initializeRadarChart();
-    initializeGaugeCharts();
-    setupRealTimeUpdates();
-    initializeExportButtons();
-});
+// Dummy data for Quality Control
+const qualityControlData = {
+    qualityChecks: [
+        { id: 'QC-2024-001', item: 'Bed Sheets', batch: 'BTH-001', date: '2024-01-05', status: 'Passed', inspector: 'John Smith', notes: 'Meets quality standards' },
+        { id: 'QC-2024-002', item: 'Towels', batch: 'BTH-002', date: '2024-01-06', status: 'Failed', inspector: 'Jane Doe', notes: 'Color inconsistency' },
+        { id: 'QC-2024-003', item: 'Soap', batch: 'BTH-003', date: '2024-01-07', status: 'Passed', inspector: 'John Smith', notes: 'Good quality' }
+    ]
+};
 
-// Line Chart Functions
-function initializeLineChart() {
-    const svg = document.getElementById('inventoryTrendChart');
-    const width = svg.clientWidth - 60;
-    const height = svg.clientHeight - 40;
-    const data = dummyData.inventory;
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// Dummy data for Expiry Tracking
+const expiryData = {
+    items: [
+        { id: 'INV-2024-001', name: 'Shampoo Bottles', batch: 'BTH-001', expiryDate: '2024-06-15', quantity: 200, location: 'Warehouse A', daysUntilExpiry: 159 },
+        { id: 'INV-2024-002', name: 'Soap Bars', batch: 'BTH-002', expiryDate: '2024-02-28', quantity: 150, location: 'Warehouse B', daysUntilExpiry: 51 },
+        { id: 'INV-2024-003', name: 'Cleaning Solution', batch: 'BTH-003', expiryDate: '2024-01-15', quantity: 100, location: 'Warehouse A', daysUntilExpiry: 7 }
+    ]
+};
 
-    // Clear previous content
-    svg.innerHTML = `
-        <g class="grid-lines"></g>
-        <path class="trend-line"></path>
-        <g class="data-points"></g>
-        <g class="x-axis"></g>
-        <g class="y-axis"></g>
-    `;
+// Balance Sheet Data
+const inventoryData = {
+    items: [
+        { id: 'ITM-001', name: 'Bed Sheets', quantity: 450, value: 15, location: 'Main Storage', category: 'Linen' },
+        { id: 'ITM-002', name: 'Towels', quantity: 800, value: 8, location: 'Housekeeping', category: 'Linen' },
+        { id: 'ITM-003', name: 'Soap Bars', quantity: 1200, value: 2, location: 'Main Storage', category: 'Amenities' },
+        { id: 'ITM-004', name: 'Shampoo Bottles', quantity: 900, value: 3, location: 'Housekeeping', category: 'Amenities' }
+    ],
+    movements: [
+        { date: '2024-01-08', type: 'Received', itemId: 'ITM-001', quantity: 100, location: 'Main Storage' },
+        { date: '2024-01-07', type: 'Transfer', itemId: 'ITM-002', quantity: 50, location: 'Housekeeping' },
+        { date: '2024-01-06', type: 'Disposal', itemId: 'ITM-003', quantity: 20, location: 'Main Storage' }
+    ],
+    locations: ['Main Storage', 'Housekeeping', 'Kitchen Storage', 'Maintenance']
+};
 
-    // Create tooltip div if it doesn't exist
-    let tooltip = document.getElementById('chart-tooltip');
-    if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.id = 'chart-tooltip';
-        tooltip.className = 'chart-tooltip';
-        document.body.appendChild(tooltip);
-    }
-
-    // Create scales
-    const xScale = width / (data.length - 1);
-    const yMin = Math.min(...data) - 5;
-    const yMax = Math.max(...data) + 5;
-    const yRange = yMax - yMin;
-
-    // Create grid lines
-    const gridLines = svg.querySelector('.grid-lines');
-    [0, 0.5, 1].forEach(ratio => {
-        const y = height - (height * ratio);
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute('x1', '30');
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', width + 30);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', 'rgba(0,0,0,0.1)');
-        line.setAttribute('stroke-width', '1');
-        gridLines.appendChild(line);
-    });
-
-    // Create trend line
-    let pathD = '';
-    const points = [];
-    data.forEach((value, index) => {
-        const x = index * xScale + 30;
-        const y = height - ((value - yMin) / yRange * height);
-        points.push({ x, y });
-        pathD += `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-    });
-
-    const trendLine = svg.querySelector('.trend-line');
-    trendLine.setAttribute('d', pathD);
-
-    // Add data points with hover effect
-    const dataPoints = svg.querySelector('.data-points');
-    let tooltipTimeout;
-
-    points.forEach((point, index) => {
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.classList.add('data-point');
-
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', '3.5');
-
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 9);
-        text.setAttribute('text-anchor', 'middle');
-        text.textContent = `${data[index]}%`;
-
-        const hitArea = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        hitArea.setAttribute('cx', point.x);
-        hitArea.setAttribute('cy', point.y);
-        hitArea.setAttribute('r', '15'); // Increased hit area
-        hitArea.setAttribute('fill', 'transparent');
-        hitArea.classList.add('hit-area');
-
-        let isHovering = false;
-
-        const showTooltip = (e) => {
-            if (tooltipTimeout) {
-                clearTimeout(tooltipTimeout);
-            }
-
-            const details = dummyData.inventoryDetails[index];
-            tooltip.innerHTML = `
-                <div class="tooltip-header">${days[index]}</div>
-                <div class="tooltip-content">
-                    <div>In Stock: ${details.inStock} units</div>
-                    <div>Ordered: ${details.ordered} units</div>
-                    <div>Pending: ${details.pending} units</div>
-                    <div>Returns: ${details.returns} units</div>
-                </div>
-            `;
-
-            // Position tooltip
-            const rect = svg.getBoundingClientRect();
-            const tooltipX = e.clientX;
-            const tooltipY = e.clientY;
-
-            // Ensure tooltip stays within viewport
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            let left = tooltipX + 15;
-            let top = tooltipY - 70;
-
-            // Adjust if tooltip would go off screen
-            if (left + tooltipRect.width > viewportWidth) {
-                left = tooltipX - tooltipRect.width - 15;
-            }
-            if (top < 0) {
-                top = tooltipY + 15;
-            }
-
-            tooltip.style.left = left + 'px';
-            tooltip.style.top = top + 'px';
-            tooltip.style.display = 'block';
-            
-            // Use RAF to ensure smooth transition
-            requestAnimationFrame(() => {
-                tooltip.classList.add('visible');
-            });
-
-            circle.setAttribute('r', '5');
-        };
-
-        const hideTooltip = () => {
-            tooltip.classList.remove('visible');
-            tooltipTimeout = setTimeout(() => {
-                tooltip.style.display = 'none';
-            }, 200); // Match this with CSS transition duration
-            circle.setAttribute('r', '3.5');
-        };
-
-        hitArea.addEventListener('mouseenter', (e) => {
-            isHovering = true;
-            showTooltip(e);
-        });
-
-        hitArea.addEventListener('mouseleave', () => {
-            isHovering = false;
-            hideTooltip();
-        });
-
-        // Update tooltip position on mousemove
-        hitArea.addEventListener('mousemove', (e) => {
-            if (isHovering) {
-                showTooltip(e);
-            }
-        });
-
-        g.appendChild(hitArea);
-        g.appendChild(circle);
-        g.appendChild(text);
-        dataPoints.appendChild(g);
-    });
-
-    // Add axes
-    const xAxis = svg.querySelector('.x-axis');
-    days.forEach((day, i) => {
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute('x', i * xScale + 30);
-        text.setAttribute('y', height + 20);
-        text.setAttribute('text-anchor', 'middle');
-        text.textContent = day;
-        xAxis.appendChild(text);
-    });
-
-    // Add Y-axis labels
-    const yAxis = svg.querySelector('.y-axis');
-    [yMax, (yMax + yMin) / 2, yMin].forEach((value, i) => {
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute('x', '25');
-        text.setAttribute('y', height - (height * i / 2));
-        text.setAttribute('text-anchor', 'end');
-        text.textContent = Math.round(value) + '%';
-        yAxis.appendChild(text);
-    });
+// Helper Functions
+function getExpiryStatus(daysUntilExpiry) {
+    if (daysUntilExpiry <= 7) return 'critical';
+    if (daysUntilExpiry <= 30) return 'warning';
+    if (daysUntilExpiry <= 90) return 'attention';
+    return 'safe';
 }
 
-// Radar Chart Functions
-function initializeRadarChart() {
-    const svg = document.getElementById('supplierPerformanceChart');
-    const centerX = svg.clientWidth / 2;
-    const centerY = svg.clientHeight / 2;
-    const radius = Math.min(centerX, centerY) - 50;
-    
-    const { metrics, values } = dummyData.supplier;
-    const points = [];
-    const angleStep = (2 * Math.PI) / metrics.length;
+function getExpiryStatusText(daysUntilExpiry) {
+    if (daysUntilExpiry <= 7) return 'Critical';
+    if (daysUntilExpiry <= 30) return 'Warning';
+    if (daysUntilExpiry <= 90) return 'Attention';
+    return 'Safe';
+}
 
-    // Create radar grid
-    const radarGrid = svg.querySelector('.radar-grid');
-    for (let level = 1; level <= 5; level++) {
-        const r = radius * (level / 5);
-        let polygonPoints = '';
-        
-        for (let i = 0; i < metrics.length; i++) {
-            const angle = i * angleStep - Math.PI / 2;
-            const x = centerX + r * Math.cos(angle);
-            const y = centerY + r * Math.sin(angle);
-            polygonPoints += `${x},${y} `;
+function generateExpiryTableRows(items) {
+    return items.map(item => `
+        <tr>
+            <td>${item.id}</td>
+            <td>${item.name}</td>
+            <td>${item.batch}</td>
+            <td>${item.expiryDate}</td>
+            <td>${item.daysUntilExpiry} days</td>
+            <td>${item.quantity}</td>
+            <td>${item.location}</td>
+            <td><span class="status ${getExpiryStatus(item.daysUntilExpiry)}">${getExpiryStatusText(item.daysUntilExpiry)}</span></td>
+        </tr>
+    `).join('');
+}
+
+function groupByCategory(items) {
+    return items.reduce((groups, item) => {
+        if (!groups[item.category]) {
+            groups[item.category] = [];
         }
-        
-        radarGrid.innerHTML += `
-            <polygon points="${polygonPoints}"/>
-        `;
+        groups[item.category].push(item);
+        return groups;
+    }, {});
+}
+
+// Report Generation Functions
+function generateSupplierReport() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const content = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Supplier Performance Analysis</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="supplier-summary">
+                    <div class="summary-card">
+                        <h3>On-Time Delivery</h3>
+                        <div class="big-number">94%</div>
+                        <div class="trend positive">↑ 2.1%</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Quality Score</h3>
+                        <div class="big-number">98.5%</div>
+                        <div class="trend positive">↑ 0.5%</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Response Time</h3>
+                        <div class="big-number">4.8</div>
+                        <div class="subtitle">hours avg.</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Average Delay</h3>
+                        <div class="big-number">1.2</div>
+                        <div class="subtitle">days</div>
+                    </div>
+                </div>
+
+                <div class="supplier-table">
+                    <h3>Top Suppliers Performance</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Reliability</th>
+                                <th>On-Time</th>
+                                <th>Quality</th>
+                                <th>Response</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ABC Supplies Co.</td>
+                                <td>98%</td>
+                                <td>96%</td>
+                                <td>99%</td>
+                                <td>4.2h</td>
+                                <td><span class="status excellent">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td>XYZ Corporation</td>
+                                <td>95%</td>
+                                <td>94%</td>
+                                <td>97%</td>
+                                <td>4.8h</td>
+                                <td><span class="status good">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>Global Traders Ltd.</td>
+                                <td>92%</td>
+                                <td>90%</td>
+                                <td>95%</td>
+                                <td>5.5h</td>
+                                <td><span class="status good">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>Quality Goods Inc.</td>
+                                <td>94%</td>
+                                <td>92%</td>
+                                <td>96%</td>
+                                <td>4.9h</td>
+                                <td><span class="status good">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>Prime Vendors Co.</td>
+                                <td>96%</td>
+                                <td>95%</td>
+                                <td>98%</td>
+                                <td>4.5h</td>
+                                <td><span class="status excellent">Excellent</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="exportSupplierReport()" class="btn-primary">Export Report</button>
+                    <button onclick="scheduleSupplierMeeting()" class="btn-secondary">Schedule Review</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking outside
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function generatePOReport() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Purchase Order Status Report</h2>
+                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="po-summary">
+                    <div class="summary-card">
+                        <h3>Pending Orders</h3>
+                        <span class="count">${purchaseOrdersData.currentOrders.filter(po => po.status === 'Pending').length}</span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Approved Orders</h3>
+                        <span class="count">${purchaseOrdersData.currentOrders.filter(po => po.status === 'Approved').length}</span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Delivered Orders</h3>
+                        <span class="count">${purchaseOrdersData.currentOrders.filter(po => po.status === 'Delivered').length}</span>
+                    </div>
+                </div>
+                <div class="po-list">
+                    <h3>Current Purchase Orders</h3>
+                    <table class="po-table">
+                        <thead>
+                            <tr>
+                                <th>PO Number</th>
+                                <th>Supplier</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${purchaseOrdersData.currentOrders.map(po => `
+                                <tr>
+                                    <td>${po.id}</td>
+                                    <td>${po.supplier}</td>
+                                    <td>${po.items.join(', ')}</td>
+                                    <td>$${po.total}</td>
+                                    <td><span class="status ${po.status.toLowerCase()}">${po.status}</span></td>
+                                    <td>${po.date}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" onclick="exportPOReport()">Export Report</button>
+                <button class="action-btn" onclick="this.closest('.modal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function generateQCReport() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Quality Control Report</h2>
+                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="qc-summary">
+                    <div class="summary-card">
+                        <h3>Total Inspections</h3>
+                        <span class="count">${qualityControlData.qualityChecks.length}</span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Pass Rate</h3>
+                        <span class="count">${Math.round((qualityControlData.qualityChecks.filter(qc => qc.status === 'Passed').length / qualityControlData.qualityChecks.length) * 100)}%</span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Failed Items</h3>
+                        <span class="count">${qualityControlData.qualityChecks.filter(qc => qc.status === 'Failed').length}</span>
+                    </div>
+                </div>
+                <div class="qc-list">
+                    <h3>Recent Quality Checks</h3>
+                    <table class="qc-table">
+                        <thead>
+                            <tr>
+                                <th>QC ID</th>
+                                <th>Item</th>
+                                <th>Batch</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Inspector</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${qualityControlData.qualityChecks.map(qc => `
+                                <tr>
+                                    <td>${qc.id}</td>
+                                    <td>${qc.item}</td>
+                                    <td>${qc.batch}</td>
+                                    <td>${qc.date}</td>
+                                    <td><span class="status ${qc.status.toLowerCase()}">${qc.status}</span></td>
+                                    <td>${qc.inspector}</td>
+                                    <td>${qc.notes}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" onclick="exportQCReport()">Export Report</button>
+                <button class="action-btn" onclick="this.closest('.modal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function checkExpiryDates() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Expiry Date Tracking</h2>
+                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="expiry-summary">
+                    <div class="summary-card critical">
+                        <h3>Critical</h3>
+                        <div class="count">${expiryData.items.filter(item => item.daysUntilExpiry <= 7).length}</div>
+                        <div class="subtitle">≤ 7 days</div>
+                    </div>
+                    <div class="summary-card warning">
+                        <h3>Warning</h3>
+                        <div class="count">${expiryData.items.filter(item => item.daysUntilExpiry > 7 && item.daysUntilExpiry <= 30).length}</div>
+                        <div class="subtitle">≤ 30 days</div>
+                    </div>
+                    <div class="summary-card attention">
+                        <h3>Attention</h3>
+                        <div class="count">${expiryData.items.filter(item => item.daysUntilExpiry > 30 && item.daysUntilExpiry <= 90).length}</div>
+                        <div class="subtitle">≤ 90 days</div>
+                    </div>
+                    <div class="summary-card safe">
+                        <h3>Safe</h3>
+                        <div class="count">${expiryData.items.filter(item => item.daysUntilExpiry > 90).length}</div>
+                        <div class="subtitle">> 90 days</div>
+                    </div>
+                </div>
+
+                <div class="expiry-filters">
+                    <button onclick="filterExpiryItems('all')" class="active">All Items</button>
+                    <button onclick="filterExpiryItems('critical')">Critical (≤7 days)</button>
+                    <button onclick="filterExpiryItems('warning')">Warning (≤30 days)</button>
+                    <button onclick="filterExpiryItems('attention')">Attention (≤90 days)</button>
+                    <button onclick="filterExpiryItems('safe')">Safe (>90 days)</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="expiry-table">
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Name</th>
+                                <th>Batch</th>
+                                <th>Expiry Date</th>
+                                <th>Days Until Expiry</th>
+                                <th>Quantity</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expiryTableBody">
+                            ${generateExpiryTableRows(expiryData.items)}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" onclick="exportExpiryReport()">Export Report</button>
+                <button class="action-btn" onclick="this.closest('.modal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function generateBalanceSheet() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const totalValue = inventoryData.items.reduce((sum, item) => sum + (item.quantity * item.value), 0);
+    const itemsByCategory = groupByCategory(inventoryData.items);
+    
+    const content = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Inventory Balance Sheet</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Items</h3>
+                        <div class="big-number">${inventoryData.items.reduce((sum, item) => sum + item.quantity, 0)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Value</h3>
+                        <div class="big-number">$${totalValue.toFixed(2)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Categories</h3>
+                        <div class="big-number">${Object.keys(itemsByCategory).length}</div>
+                    </div>
+                </div>
+
+                <div class="inventory-table">
+                    <h3>Inventory by Category</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Items</th>
+                                <th>Total Quantity</th>
+                                <th>Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(itemsByCategory).map(([category, items]) => `
+                                <tr>
+                                    <td>${category}</td>
+                                    <td>${items.length}</td>
+                                    <td>${items.reduce((sum, item) => sum + item.quantity, 0)}</td>
+                                    <td>$${items.reduce((sum, item) => sum + (item.quantity * item.value), 0).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="exportBalanceSheet()" class="btn-primary">Export Report</button>
+                    <button onclick="printBalanceSheet()" class="btn-secondary">Print Report</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+    
+    const closeBtn = modal.querySelector('.close-btn');
+    closeBtn.onclick = () => modal.remove();
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function generateMovementReport() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const content = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Item Movement History</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Movements</h3>
+                        <div class="big-number">${inventoryData.movements.length}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Locations</h3>
+                        <div class="big-number">${inventoryData.locations.length}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Active Items</h3>
+                        <div class="big-number">${inventoryData.items.length}</div>
+                    </div>
+                </div>
+
+                <div class="movement-filters">
+                    <button class="filter-btn active" onclick="filterMovements('all')">All</button>
+                    <button class="filter-btn" onclick="filterMovements('received')">Received</button>
+                    <button class="filter-btn" onclick="filterMovements('transfer')">Transfers</button>
+                    <button class="filter-btn" onclick="filterMovements('disposal')">Disposals</button>
+                </div>
+
+                <div class="movement-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${inventoryData.movements.map(movement => {
+                                const item = inventoryData.items.find(item => item.id === movement.itemId);
+                                return `
+                                    <tr>
+                                        <td>${movement.date}</td>
+                                        <td><span class="status ${movement.type.toLowerCase()}">${movement.type}</span></td>
+                                        <td>${item ? item.name : 'Unknown Item'}</td>
+                                        <td>${movement.quantity}</td>
+                                        <td>${movement.location}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="exportMovementReport()" class="btn-primary">Export Report</button>
+                    <button onclick="printMovementReport()" class="btn-secondary">Print Report</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+    
+    const closeBtn = modal.querySelector('.close-btn');
+    closeBtn.onclick = () => modal.remove();
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+// Filter Functions
+function filterExpiryItems(status) {
+    const tbody = document.getElementById('expiryTableBody');
+    const items = [...expiryData.items];
+    
+    const filteredItems = status === 'all' ? items : items.filter(item => {
+        const itemStatus = getExpiryStatus(item.daysUntilExpiry);
+        return itemStatus === status;
+    });
+    
+    tbody.innerHTML = generateExpiryTableRows(filteredItems);
+    
+    // Update active button state
+    document.querySelectorAll('.expiry-filters button').forEach(btn => {
+        btn.classList.toggle('active', btn.onclick.toString().includes(status));
+    });
+}
+
+function filterMovements(type) {
+    const buttons = document.querySelectorAll('.movement-filters .filter-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Filter logic would go here
+    alert(`Filtering for ${type} movements`);
+}
+
+// Export Functions
+function exportSupplierReport() {
+    alert('Supplier Report exported successfully!');
+}
+
+function exportPOReport() {
+    alert('Purchase Order Report exported successfully!');
+}
+
+function exportQCReport() {
+    alert('Quality Control Report exported successfully!');
+}
+
+function exportExpiryReport() {
+    alert('Expiry Report exported successfully!');
+}
+
+function exportBalanceSheet() {
+    alert('Exporting Balance Sheet...');
+}
+
+function exportMovementReport() {
+    alert('Exporting Movement Report...');
+}
+
+function printBalanceSheet() {
+    alert('Preparing Balance Sheet for printing...');
+}
+
+function printMovementReport() {
+    alert('Preparing Movement Report for printing...');
+}
+
+// Add modal styles
+const modalStyles = `
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
     }
 
-    // Create data area
-    values.forEach((value, i) => {
-        const angle = i * angleStep - Math.PI / 2;
-        const r = radius * (value / 100);
-        const x = centerX + r * Math.cos(angle);
-        const y = centerY + r * Math.sin(angle);
-        points.push({ x, y });
-    });
+    .modal.show {
+        opacity: 1;
+    }
 
-    const dataArea = svg.querySelector('.data-area');
-    dataArea.innerHTML = `
-        <polygon points="${points.map(p => `${p.x},${p.y}`).join(' ')}"/>
-    `;
+    .modal-content {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1000px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(-20px);
+        transition: transform 0.3s ease-in-out;
+    }
 
-    // Add data points
-    const dataPoints = svg.querySelector('.data-points');
-    points.forEach(point => {
-        dataPoints.innerHTML += `
-            <circle cx="${point.x}" cy="${point.y}" r="4"/>
-        `;
-    });
+    .modal.show .modal-content {
+        transform: translateY(0);
+    }
 
-    // Add labels
-    const labels = svg.querySelector('.labels');
-    metrics.forEach((metric, i) => {
-        const angle = i * angleStep - Math.PI / 2;
-        const x = centerX + (radius + 20) * Math.cos(angle);
-        const y = centerY + (radius + 20) * Math.sin(angle);
-        labels.innerHTML += `
-            <text x="${x}" y="${y}" text-anchor="middle">${metric}</text>
-        `;
-    });
-}
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
 
-// Gauge Chart Functions
-function initializeGaugeCharts() {
-    const gauges = document.querySelectorAll('.gauge-chart');
-    gauges.forEach(gauge => {
-        // Generate initial random value between 70 and 100
-        const initialValue = Math.floor(Math.random() * (100 - 70) + 70);
-        updateGauge(gauge, initialValue);
-    });
-}
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
 
-function updateGauge(gauge, value) {
-    const progress = gauge.querySelector('.gauge-progress');
-    const valueText = gauge.querySelector('.gauge-value');
-    
-    const radius = 65;
-    const circumference = 2 * Math.PI * radius;
-    const maxAngle = 270; // 270 degrees arc
-    const startAngle = -225; // Start at -225 degrees (bottom left)
-    const angleRange = maxAngle * (value / 100);
-    
-    // Calculate start point
-    const startX = 75 + radius * Math.cos(startAngle * Math.PI / 180);
-    const startY = 75 + radius * Math.sin(startAngle * Math.PI / 180);
-    
-    // Calculate end point
-    const endAngle = startAngle + angleRange;
-    const endX = 75 + radius * Math.cos(endAngle * Math.PI / 180);
-    const endY = 75 + radius * Math.sin(endAngle * Math.PI / 180);
-    
-    // Create arc path
-    const largeArcFlag = angleRange > 180 ? 1 : 0;
-    const arcPath = `
-        M ${startX} ${startY}
-        A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}
-    `;
-    
-    progress.setAttribute('d', arcPath);
-    progress.style.strokeDasharray = `${circumference}`;
-    progress.style.strokeDashoffset = `${circumference * (1 - value / 100)}`;
-    valueText.textContent = `${Math.round(value)}%`;
-}
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-shrink: 0;
+    }
 
-// Real-time updates
-function setupRealTimeUpdates() {
-    // Update line chart every 10 seconds with smoother transitions
-    setInterval(() => {
-        dummyData.inventory.shift();
-        // Generate new value close to the last value for smoother transitions
-        const lastValue = dummyData.inventory[dummyData.inventory.length - 1];
-        const newValue = Math.max(75, Math.min(95, 
-            lastValue + (Math.random() * 10 - 5))); // Change by -5 to +5
-        dummyData.inventory.push(Math.round(newValue));
-        initializeLineChart();
-    }, 10000); // Changed to 10 seconds
+    .summary-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
 
-    // Update gauge charts every 30 seconds
-    setInterval(() => {
-        document.querySelectorAll('.gauge-chart').forEach(gauge => {
-            const newValue = Math.floor(Math.random() * (100 - 70) + 70);
-            updateGauge(gauge, newValue);
-        });
-    }, 30000);
-}
+    .summary-card h3 {
+        color: #495057;
+        margin: 0 0 10px 0;
+        font-size: 1rem;
+    }
 
-// Export functionality
-function initializeExportButtons() {
-    document.querySelectorAll('.export-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            const reportType = e.target.dataset.report;
-            exportReport(reportType);
-        });
-    });
-}
+    .summary-card .count,
+    .summary-card .big-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 5px 0;
+    }
 
-// Export report function
-function exportReport(reportType) {
-    // Get report data
-    const reportData = generateReportData(reportType);
-    
-    // Create CSV
-    const csv = convertToCSV(reportData);
-    
-    // Create download link
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `${reportType}_report_${new Date().toISOString()}.csv`);
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
+    .summary-card .trend {
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
 
-// Utility functions
-function generateReportData(reportType) {
-    // TO DO: implement report data generation
-    return [];
-}
+    .summary-card .trend.positive {
+        color: #28a745;
+    }
 
-function convertToCSV(data) {
-    // TO DO: implement CSV conversion
-    return '';
-}
+    .summary-card .trend.negative {
+        color: #dc3545;
+    }
+
+    .summary-card .subtitle {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background: #f8f9fa;
+        font-weight: 500;
+        color: #495057;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .status.excellent {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status.good {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .status.critical {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status.warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status.attention {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .status.safe {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .action-btn,
+    .btn-primary,
+    .btn-secondary {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-btn,
+    .btn-primary {
+        background: #4CAF50;
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+
+    .action-btn:hover,
+    .btn-primary:hover {
+        background: #43a047;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+`;
+
+const style = document.createElement('style');
+style.textContent = modalStyles;
+document.head.appendChild(style);

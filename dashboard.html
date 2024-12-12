@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Inventory Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -611,81 +613,100 @@
     </style>
 </head>
 <body>
-<div class="dashboard-container">
-    <div class="dashboard-grid-left">
-        <!-- Turnover Section -->
-        <div class="dashboard-section requests-section">
-            <div class="section-header">
-                <h2 class="section-title">Inventory Turnover Rate</h2>
-            </div>
-            <div class="turnover-chart">
-                <svg class="turnover-chart-svg" id="turnoverChart"></svg>
-            </div>
-            <div class="legend" id="turnoverLegend"></div>
+<div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <img src="logo.png" alt="Hotel Warehouse Logo" class="logo">
         </div>
-        <!-- Performance Section -->
-        <div class="dashboard-section performance-section">
-            <div class="section-header">
-                <h2 class="section-title">Supplier Performance Metrics</h2>
-            </div>
-            <div class="radar-chart">
-                <svg class="radar-chart-svg" id="radarChart"></svg>
-            </div>
-        </div>
-        <!-- Stock Level Alerts Section -->
-        <div class="dashboard-section gauge-section">
-            <div class="section-header">
-                <h2 class="section-title">Stock Level Alerts</h2>
-            </div>
-            <div class="gauge-wrapper">
-                <div class="gauge-tooltip" id="gaugeTooltip">
-                    <!-- Tooltip content will be added dynamically -->
+        <ul class="nav-menu">
+            <li class="active"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="inventory.html"><i class="fas fa-box-open"></i> Inventory</a></li>
+            <li><a href="purchase.html"><i class="fas fa-shopping-cart"></i> Purchases</a></li>
+            <li><a href="vendor.html"><i class="fas fa-truck"></i> Vendors</a></li>
+            <li><a href="departments.html"><i class="fas fa-building"></i> Departments</a></li>
+            <li><a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="dashboard-grid-left">
+                <!-- Turnover Section -->
+                <div class="dashboard-section requests-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Inventory Turnover Rate</h2>
+                    </div>
+                    <div class="turnover-chart">
+                        <svg class="turnover-chart-svg" id="turnoverChart"></svg>
+                    </div>
+                    <div class="legend" id="turnoverLegend"></div>
                 </div>
-                <div class="gauge">
-                    <div class="gauge-fill" id="gaugeFill"></div>
-                    <div class="gauge-cover">
-                        <div class="gauge-value" id="gaugeValue">0%</div>
+                <!-- Performance Section -->
+                <div class="dashboard-section performance-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Supplier Performance Metrics</h2>
+                    </div>
+                    <div class="radar-chart">
+                        <svg class="radar-chart-svg" id="radarChart"></svg>
                     </div>
                 </div>
+                <!-- Stock Level Alerts Section -->
+                <div class="dashboard-section gauge-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Stock Level Alerts</h2>
+                    </div>
+                    <div class="gauge-wrapper">
+                        <div class="gauge-tooltip" id="gaugeTooltip">
+                            <!-- Tooltip content will be added dynamically -->
+                        </div>
+                        <div class="gauge">
+                            <div class="gauge-fill" id="gaugeFill"></div>
+                            <div class="gauge-cover">
+                                <div class="gauge-value" id="gaugeValue">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gauge-label">Items Below Safety Stock</div>
+                    <div id="alertStatus" class="alert-status">Calculating...</div>
+                </div>
             </div>
-            <div class="gauge-label">Items Below Safety Stock</div>
-            <div id="alertStatus" class="alert-status">Calculating...</div>
-        </div>
-    </div>
-<div class="dashboard-grid-right">
-    <!-- Trends Section
-    <div class="dashboard-section trends-section">
-        <div class="section-header">
-            <h2 class="section-title">Item Movement Trends</h2>
-        </div>
-        <div class="line-chart">
-            <svg class="line-chart-svg" id="lineChart"></svg>
-        </div>
-    </div> -->
+            <div class="dashboard-grid-right">
+                <!-- Trends Section
+                <div class="dashboard-section trends-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Item Movement Trends</h2>
+                    </div>
+                    <div class="line-chart">
+                        <svg class="line-chart-svg" id="lineChart"></svg>
+                    </div>
+                </div> -->
 
 
-    <!-- Purchase Orders Section -->
-    <div class="dashboard-section purchase-section">
-        <div class="section-header">
-            <h2 class="section-title">Purchase Order Status</h2>
-        </div>
-        <div class="funnel-chart">
-            <svg class="funnel-chart-svg" id="funnelChart"></svg>
-        </div>
-    </div>
+                <!-- Purchase Orders Section -->
+                <div class="dashboard-section purchase-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Purchase Order Status</h2>
+                    </div>
+                    <div class="funnel-chart">
+                        <svg class="funnel-chart-svg" id="funnelChart"></svg>
+                    </div>
+                </div>
 
 
-    <!-- Department Requests Section -->
-    <div class="dashboard-section requests-section">
-        <div class="section-header">
-            <h2 class="section-title">Interdepartmental Requests</h2>
+                <!-- Department Requests Section -->
+                <div class="dashboard-section requests-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Interdepartmental Requests</h2>
+                    </div>
+                    <div class="stacked-chart">
+                        <svg class="stacked-chart-svg" id="stackedChart"></svg>
+                    </div>
+                    <div class="legend" id="stackedChartLegend"></div>
+                </div>
+            </div>
         </div>
-        <div class="stacked-chart">
-            <svg class="stacked-chart-svg" id="stackedChart"></svg>
-        </div>
-        <div class="legend" id="stackedChartLegend"></div>
-    </div>
-</div>
+    </main>
 </div>
 
 <script>
@@ -1250,9 +1271,7 @@
 
             section.addEventListener('mouseout', () => {
                 const tooltip = document.querySelector('.funnel-tooltip');
-                if (tooltip) {
-                    tooltip.remove();
-                }
+                if (tooltip) tooltip.remove();
             });
 
             svg.appendChild(section);
@@ -1581,6 +1600,7 @@
                 circle.addEventListener('mouseover', (e) => {
                     const tooltip = document.createElement('div');
                     tooltip.className = 'turnover-tooltip';
+                    tooltip.style.position = 'absolute';
                     tooltip.style.left = `${e.pageX + 10}px`;
                     tooltip.style.top = `${e.pageY - 10}px`;
                     tooltip.innerHTML = `
