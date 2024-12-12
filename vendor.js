@@ -374,21 +374,18 @@ function updateStats() {
     const activeVendors = vendors.filter(v => v.performance === 'good').length;
     const newVendors = vendors.filter(v => v.performance === 'new').length;
 
-    // Update stats in the UI
-    document.getElementById('totalVendors').textContent = totalVendors;
-    document.getElementById('activeVendors').textContent = activeVendors;
-    document.getElementById('newVendors').textContent = newVendors;
-
-    // Update stat card colors
-    const statCards = document.querySelectorAll('.stat-card');
-    statCards.forEach(card => {
-        const icon = card.querySelector('.stat-icon');
-        if (card.querySelector('h3').textContent.includes('Total')) {
-            icon.style.background = '#6366f1'; // Purple for total
-        } else if (card.querySelector('h3').textContent.includes('Active')) {
-            icon.style.background = '#22c55e'; // Green for active
-        } else if (card.querySelector('h3').textContent.includes('New')) {
-            icon.style.background = '#3b82f6'; // Blue for new
+    // Update stats in the summary cards
+    const summaryCards = document.querySelectorAll('.summary-card');
+    summaryCards.forEach(card => {
+        const infoText = card.querySelector('.info p').textContent.toLowerCase();
+        const numberElement = card.querySelector('.info h3');
+        
+        if (infoText.includes('total')) {
+            numberElement.textContent = totalVendors;
+        } else if (infoText.includes('active')) {
+            numberElement.textContent = activeVendors;
+        } else if (infoText.includes('new')) {
+            numberElement.textContent = newVendors;
         }
     });
 }
