@@ -93,7 +93,7 @@
 }
 
 .inventory-item {
-    background: white;
+    background: rgb(193, 222, 252);
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -467,7 +467,7 @@
 
 /* Inventory Status Chart Styles */
 .inventory-status-chart {
-    background: #ffffff;
+    background: #beffc6;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
@@ -519,7 +519,7 @@
 }
 
 .category-section {
-    background: #f8f9fa;
+    background: #eedede;
     border-radius: 8px;
     padding: 16px;
 }
