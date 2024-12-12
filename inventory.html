@@ -478,6 +478,145 @@
             background: #f9fafb;
             border-color: #d1d5db;
         }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 15px;
+        }
+
+        .inventory-item {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .inventory-item:nth-child(3n+1) {
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e8f7 100%);
+            border-left-color: #2196F3;
+        }
+
+        .inventory-item:nth-child(3n+2) {
+            background: linear-gradient(135deg, #f0f4e8 0%, #e3ecd1 100%);
+            border-left-color: #4CAF50;
+        }
+
+        .inventory-item:nth-child(3n+3) {
+            background: linear-gradient(135deg, #fce8e8 0%, #f7d1d1 100%);
+            border-left-color: #f44336;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        .item-header h3 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .department-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .department-tag.housekeeping {
+            background: linear-gradient(45deg, #2196F3, #64B5F6);
+        }
+
+        .department-tag.f\&b {
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+        }
+
+        .department-tag.amenities {
+            background: linear-gradient(45deg, #a24a43, #680000);
+        }
+
+        .item-details {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            display: contents;
+        }
+
+        .detail .label {
+            color: #546e7a;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .detail span:not(.label) {
+            color: #263238;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .detail span.warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .item-actions {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .item-actions button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+        }
+
+        .item-actions .edit-btn {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+        }
+
+        .item-actions .delete-btn {
+            background: linear-gradient(135deg, #f44336, #e57373);
+        }
+
+        .item-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -577,135 +716,6 @@
                     </div>
                 </div>
 
-                <div class="inventory-status-chart">
-                    <h2>Inventory Status Overview</h2>
-                    <div class="chart-container">
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <span class="status-dot critical"></span>
-                                <span>Critical Stock</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="status-dot low"></span>
-                                <span>Low Stock</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="status-dot normal"></span>
-                                <span>Normal Stock</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="status-dot expiring"></span>
-                                <span>Expiring Soon</span>
-                            </div>
-                        </div>
-                        
-                        <div class="category-charts">
-                            <!-- Food Category -->
-                            <div class="category-section">
-                                <h3>Food Items</h3>
-                                <div class="storage-location">
-                                    <h4>Refrigerated Storage</h4>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Fresh Produce</span>
-                                            <span class="quantity">120 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress normal" style="width: 75%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Dairy Products</span>
-                                            <span class="quantity">45 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress expiring" style="width: 30%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Beverages Category -->
-                            <div class="category-section">
-                                <h3>Beverages</h3>
-                                <div class="storage-location">
-                                    <h4>Dry Storage</h4>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Soft Drinks</span>
-                                            <span class="quantity">200 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress normal" style="width: 85%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Mineral Water</span>
-                                            <span class="quantity">50 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress low" style="width: 25%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Cleaning Supplies Category -->
-                            <div class="category-section">
-                                <h3>Cleaning Supplies</h3>
-                                <div class="storage-location">
-                                    <h4>Chemical Storage</h4>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Detergents</span>
-                                            <span class="quantity">15 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress critical" style="width: 15%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Sanitizers</span>
-                                            <span class="quantity">80 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress normal" style="width: 65%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Equipment Category -->
-                            <div class="category-section">
-                                <h3>Equipment</h3>
-                                <div class="storage-location">
-                                    <h4>Equipment Storage</h4>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Vacuum Cleaners</span>
-                                            <span class="quantity">8 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress normal" style="width: 70%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="item-bar">
-                                        <div class="item-info">
-                                            <span>Maintenance Tools</span>
-                                            <span class="quantity">25 units</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress low" style="width: 35%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="inventory-grid">
                     <!-- Inventory items will be populated here -->
