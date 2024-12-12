@@ -355,43 +355,76 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
-        .gauge-tooltip {
-            position: absolute;
-            top: -70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2d3436;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 100;
-            width: max-content;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        .gauge-section {
+            grid-column: 2;
+            justify-self: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
         }
 
-        .gauge-tooltip::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid #2d3436;
+        .stock-alerts {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
         }
 
-        .gauge-wrapper:hover .gauge-tooltip {
-            opacity: 1;
-            visibility: visible;
+        .pie-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+
+        #stockPieChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .stock-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .stock-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .alert-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .alert-status.good {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .alert-status.warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .alert-status.critical {
+            background-color: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
         }
 
         .line-chart-container {
