@@ -15,8 +15,43 @@
         }
 
         body {
-            background-color: #f5f6fa;
+            margin: 0;
             padding: 20px;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #1a237e, #d32f2f, #0d47a1);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                rgba(255, 87, 34, 0.6) 0%,
+                rgba(233, 30, 99, 0.4) 30%,
+                rgba(26, 35, 126, 0.2) 70%);
+            animation: pulse 8s infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
         }
 
         .dashboard-container {
@@ -70,10 +105,17 @@
         }
 
         .dashboard-section {
-            background: white;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .section-header {
@@ -714,7 +756,10 @@
     </style>
 </head>
 <body>
+
 <div class="container">
+    <!-- Add background animation -->
+
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="logo-container">
@@ -1579,6 +1624,35 @@
             legendContainer.appendChild(legendItem);
         });
     }
+
+    // Background Animation
+    function animateBackground() {
+        document.addEventListener("mousemove", (e) => {
+            const xRatio = e.clientX / window.innerWidth;
+            const yRatio = e.clientY / window.innerHeight;
+            
+            // Deep, vibrant colors
+            const colors = [
+                `hsla(${xRatio * 30}, 90%, 45%, 0.9)`,      // Deep red-orange
+                `hsla(${220 + yRatio * 40}, 85%, 40%, 0.9)`, // Deep blue
+                `hsla(${xRatio * 60}, 80%, 45%, 0.9)`        // Orange-yellow
+            ];
+            
+            const angle = (xRatio * 360);
+            
+            document.body.style.background = `
+                linear-gradient(
+                    ${angle}deg,
+                    ${colors[0]},
+                    ${colors[1]},
+                    ${colors[2]}
+                )
+            `;
+        });
+    }
+
+    // Initialize animation after page load
+    window.addEventListener("load", animateBackground);
 
     // Update the window load event listener
     window.addEventListener('load', () => {
