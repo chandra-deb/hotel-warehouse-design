@@ -20,11 +20,12 @@
         }
 
         .dashboard-container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
             display: grid;
-            grid-template-columns:  2fr 1fr;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
         }
 
         .dashboard-grid-left {
@@ -83,12 +84,16 @@
 
         .chart-container, .gauge-container, .line-chart-container,
         .radar-chart-container, .funnel-chart-container {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
             padding: 15px;
             margin-bottom: 15px;
         }
 
         .inventory-chart {
-            height: 250px;
+            height: 300px;
+            width: 100%;
             display: flex;
             gap: 8px;
             align-items: flex-end;
