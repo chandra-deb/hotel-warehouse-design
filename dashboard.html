@@ -36,22 +36,44 @@
                 rgba(233, 30, 99, 0.4) 30%,
                 rgba(26, 35, 126, 0.2) 70%);
             animation: pulse 8s infinite;
-            z-index: -1;
+            z-index: 0;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
+        .mouse-glow {
+            position: fixed;
+            pointer-events: none;
+            width: 200vw;  
+            height: 200vh; 
+            border-radius: 50%;
+            background: radial-gradient(circle at center,
+                rgba(30, 64, 175, 0.75) 0%,
+                rgba(17, 24, 139, 0.6) 10%,
+                rgba(10, 17, 112, 0.4) 20%,
+                rgba(8, 14, 92, 0.2) 35%,
+                rgba(8, 14, 92, 0.1) 50%,
+                rgba(8, 14, 92, 0.05) 65%,
+                rgba(8, 14, 92, 0) 80%);
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+            z-index: 1;
+            mix-blend-mode: hard-light;
+            filter: contrast(1.2);
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .dashboard-section {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .dashboard-container {
@@ -102,15 +124,6 @@
 
         .requests-section {
             grid-column: span 2;
-        }
-
-        .dashboard-section {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(12px);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .dashboard-section:hover {
@@ -880,6 +893,8 @@
         </div>
     </main>
 </div>
+
+<div class="mouse-glow"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
@@ -1659,27 +1674,18 @@
 
     // Background Animation
     function animateBackground() {
+        // Create mouse glow element if it doesn't exist
+        let mouseGlow = document.querySelector('.mouse-glow');
+        if (!mouseGlow) {
+            mouseGlow = document.createElement('div');
+            mouseGlow.className = 'mouse-glow';
+            document.body.appendChild(mouseGlow);
+        }
+
         document.addEventListener("mousemove", (e) => {
-            const xRatio = e.clientX / window.innerWidth;
-            const yRatio = e.clientY / window.innerHeight;
-            
-            // Deep, vibrant colors
-            const colors = [
-                `hsla(${xRatio * 30}, 90%, 45%, 0.9)`,      // Deep red-orange
-                `hsla(${220 + yRatio * 40}, 85%, 40%, 0.9)`, // Deep blue
-                `hsla(${xRatio * 60}, 80%, 45%, 0.9)`        // Orange-yellow
-            ];
-            
-            const angle = (xRatio * 360);
-            
-            document.body.style.background = `
-                linear-gradient(
-                    ${angle}deg,
-                    ${colors[0]},
-                    ${colors[1]},
-                    ${colors[2]}
-                )
-            `;
+            // Update mouse glow position
+            mouseGlow.style.left = e.clientX + 'px';
+            mouseGlow.style.top = e.clientY + 'px';
         });
     }
 
