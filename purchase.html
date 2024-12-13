@@ -7,6 +7,520 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="purchase.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .purchase-page {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .add-item-btn, .export-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-item-btn {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+        }
+
+        .export-btn {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .add-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .export-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .inventory-controls {
+            margin-bottom: 30px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-box input:focus {
+            border-color: #9333ea;
+            box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+            outline: none;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-group select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 150px;
+        }
+
+        .filter-group select:focus {
+            border-color: #9333ea;
+            box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+            outline: none;
+        }
+
+        #purchaseGrid,
+        .purchase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 15px;
+        }
+
+        .purchase-card {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            border-left: 4px solid;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .purchase-card:nth-child(3n+1) {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left-color: #9333ea;
+        }
+
+        .purchase-card:nth-child(3n+2) {
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+            border-left-color: #7c3aed;
+        }
+
+        .purchase-card:nth-child(3n+3) {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-left-color: #8b5cf6;
+        }
+
+        .purchase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .purchase-header h3 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .status-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-tag.pending {
+            background: linear-gradient(45deg, #9333ea, #7c3aed);
+            color: white;
+        }
+
+        .status-tag.approved {
+            background: linear-gradient(45deg, #10b981, #059669);
+
+            color: white;
+        }
+
+        .status-tag.completed {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+
+            color: white;
+        }
+
+        .status-tag.cancelled {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+
+            color: white;
+        }
+
+        .purchase-details {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            display: contents;
+        }
+
+        .detail .label {
+            color: #546e7a;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .detail span:not(.label) {
+            color: #263238;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .purchase-actions {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .purchase-actions button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+        }
+
+        .purchase-actions .edit-btn {
+            background: linear-gradient(135deg, #9333ea, #7c3aed);
+        }
+
+        .purchase-actions .delete-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .purchase-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(91, 33, 182, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal.show {
+            display: flex !important;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(147, 51, 234, 0.25);
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            position: relative;
+            border-top: 5px solid #9333ea;
+            margin: 0;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f3e8ff;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #9333ea;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #7c3aed;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
+            margin: 0 0 24px;
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-content h2::before {
+            content: '+';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-group label::after {
+            content: '*';
+            color: #9333ea;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: white;
+            color: #1f2937;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #d8b4fe;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #9333ea;
+            box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+            outline: none;
+        }
+
+        /* Only show validation styles after user interaction or form submission */
+        .form-group input:invalid,
+        .form-group select:invalid {
+            border-color: #e5e7eb;  /* Default border color */
+        }
+
+        .form-group input.touched:invalid,
+        .form-group select.touched:invalid,
+        #purchaseForm.submitted input:invalid,
+        #purchaseForm.submitted select:invalid {
+            border-color: #ef4444;
+        }
+
+        .form-group input.touched:invalid:focus,
+        .form-group select.touched:invalid:focus,
+        #purchaseForm.submitted input:invalid:focus,
+        #purchaseForm.submitted select:invalid:focus {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 2px solid rgba(147, 51, 234, 0.1);
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d8b4fe;
+            color: #7c3aed;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f3e8ff;
+            color: #7c3aed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #9333ea;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Loading state for buttons */
+        .btn-primary.loading,
+        .btn-secondary.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-primary.loading::after,
+        .btn-secondary.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            border-top-color: currentColor;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -84,58 +598,67 @@
                     </div>
                 </div>
 
-                <div id="purchaseGrid" class="inventory-grid">
+                <div id="purchaseGrid" class="purchase-grid">
                     <!-- Purchases will be dynamically added here -->
                 </div>
 
                 <!-- Add/Edit Purchase Modal -->
                 <div id="addPurchaseModal" class="modal">
                     <div class="modal-content">
-                        <h2>Add New Purchase Order</h2>
+                        <button class="modal-close" onclick="hideAddPurchaseModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <h2>Add Purchase Order</h2>
                         <form id="purchaseForm">
-                            <div class="form-group">
-                                <label>Vendor*</label>
-                                <select id="vendorSelect" required>
-                                    <option value="">Select Vendor</option>
-                                    <!-- Vendors will be dynamically populated -->
-                                </select>
-                            </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Item Name*</label>
-                                    <input type="text" id="itemName" required>
+                                    <label>Vendor Name</label>
+                                    <select id="vendorSelect" required>
+                                        <option value="" selected disabled>Select Vendor</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Quantity*</label>
-                                    <input type="number" id="quantity" min="1" required>
+                                    <label>Item Name</label>
+                                    <input type="text" id="itemName" required placeholder="Enter item name">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Unit Price*</label>
-                                    <input type="number" id="unitPrice" step="0.01" min="0" required>
+                                    <label>Quantity</label>
+                                    <input type="number" id="quantity" required min="1" placeholder="Enter quantity">
                                 </div>
                                 <div class="form-group">
-                                    <label>Expected Delivery Date*</label>
+                                    <label>Unit Price</label>
+                                    <input type="number" id="unitPrice" required min="0.01" step="0.01" placeholder="Enter unit price">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Expected Delivery</label>
                                     <input type="date" id="expectedDelivery" required>
                                 </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="status" required>
+                                        <option value="" selected disabled>Select Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label>Status*</label>
-                                <select id="purchaseStatus" required>
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
+                                <label>Notes</label>
+                                <textarea id="notes" rows="3" placeholder="Enter additional notes"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label>Additional Notes</label>
-                                <textarea id="notes" rows="3"></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="cancel-btn" onclick="hideAddPurchaseModal()">Cancel</button>
-                                <button type="submit" class="submit-btn">Add Purchase Order</button>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-secondary" onclick="hideAddPurchaseModal()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-plus"></i> Add Purchase Order
+                                </button>
                             </div>
                         </form>
                     </div>
